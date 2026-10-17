@@ -1,0 +1,25 @@
+{
+  "name": "visapath-demo-portal",
+  "version": "1.0.0",
+  "description": "VisaPath Demo Portal - Educational Full-Stack Immigration Application Simulation",
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "dev:server": "npm --prefix server start",
+    "dev:client": "npm --prefix client run dev",
+    "build:client": "npm --prefix client run build",
+    "test": "npm --prefix server test",
+    "test:e2e": "node server/tests/e2e-curl-test.js"
+  },
+  "keywords": [
+    "educational",
+    "immigration-workflow",
+    "react",
+    "express",
+    "mongodb",
+    "pdfkit",
+    "jwt",
+    "fictional-demo"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "ISC"
+}
