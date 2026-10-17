@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "VisaPath Demo Portal - Educational Full-Stack Immigration Application Simulation",
   "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue.bold,cyan.bold\" \"npm run server\" \"npm run client\"",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "start": "npm run dev",
     "install:all": "npm --prefix server install && npm --prefix client install",
-    "dev:server": "npm --prefix server start",
-    "dev:client": "npm --prefix client run dev",
-    "build:client": "npm --prefix client run build",
+    "build": "npm --prefix client run build",
     "test": "npm --prefix server test",
     "test:e2e": "node server/tests/e2e-curl-test.js"
   },
@@ -21,5 +23,8 @@
     "fictional-demo"
   ],
   "author": "Antigravity Engineering",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
 }
