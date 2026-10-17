@@ -7,12 +7,11 @@ import DemoDisclaimerBanner from '../components/DemoDisclaimerBanner';
 export default function MainLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
-      <DemoDisclaimerBanner />
-      <Navbar />
+      {/* <Navbar /> */}
       <main className="flex-1 w-full">
         <Outlet />
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
