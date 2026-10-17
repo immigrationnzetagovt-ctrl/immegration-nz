@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import Navbar from '../components/Navbar';
 import {
   ShieldCheck,
   FileText,
@@ -50,8 +51,12 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="space-y-16 lg:space-y-24 py-8">
-      {/* Hero Section */}
+    <div className="w-full bg-[#f8fafc] min-h-screen">
+      {/* New Zealand Immigration Navbar */}
+      <Navbar />
+
+      <div className="space-y-16 lg:space-y-24 py-8">
+        {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-3xl bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white p-8 sm:p-12 lg:p-16 overflow-hidden shadow-2xl border border-slate-800">
           {/* Subtle geometric background accents (pure SVG/CSS, no external assets) */}
@@ -341,6 +346,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 }
+
