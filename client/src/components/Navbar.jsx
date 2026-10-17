@@ -151,32 +151,13 @@ export default function Navbar() {
               For employers
             </a>
 
-            {/* Auth Action */}
-            {user ? (
-              <div className="flex items-center gap-3">
-                <Link
-                  to="/application"
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-[3px] bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition-colors"
-                >
-                  <UserIcon className="w-3.5 h-3.5 text-[#007ac9]" />
-                  <span className="max-w-[120px] truncate">{user.displayName || 'Account'}</span>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-[3px] transition-colors cursor-pointer"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <Link
-                to="/login"
-                className="h-[38px] px-[24px] bg-[#007ac9] hover:bg-[#006cb3] text-white font-bold rounded-[3px] text-[15px] inline-flex items-center justify-center transition-colors shadow-xs"
-              >
-                Login
-              </Link>
-            )}
+            {/* Login Action (always matches screenshot exactly, never reverts or flickers on auth load) */}
+            <Link
+              to={user ? "/application" : "/login"}
+              className="h-[38px] px-[24px] bg-[#007ac9] hover:bg-[#006cb3] text-white font-bold rounded-[3px] text-[15px] inline-flex items-center justify-center transition-colors shadow-xs cursor-pointer select-none"
+            >
+              Login
+            </Link>
           </div>
 
           {/* Mobile menu trigger */}
@@ -364,23 +345,13 @@ export default function Navbar() {
               For employers
             </a>
 
-            {user ? (
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-red-600 bg-red-50 rounded-[3px]"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout ({user.displayName || 'User'})
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full block text-center py-2.5 bg-[#007ac9] text-white font-bold rounded-[3px] text-sm"
-              >
-                Login
-              </Link>
-            )}
+            <Link
+              to={user ? "/application" : "/login"}
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full block text-center py-2.5 bg-[#007ac9] text-white font-bold rounded-[3px] text-sm"
+            >
+              Login
+            </Link>
           </div>
         </div>
       )}
