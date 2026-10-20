@@ -15,11 +15,14 @@ const { generateApplicationPdf } = require('../services/pdfService');
 // @access  Protected (or combined with registration if unauthenticated)
 const create = async (req, res, next) => {
   try {
+    const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body)
+      ? req.body
+      : {};
     let currentUser = req.user;
 
     // If request includes user credentials and user is not authenticated yet, create account first
-    if (!currentUser && req.body.account) {
-      const { isValid: isUserValid, errors: userErrors, sanitized: sanitizedUser } = validateRegistration(req.body.account);
+    if (!currentUser && body.account) {
+      const { isValid: isUserValid, errors: userErrors, sanitized: sanitizedUser } = validateRegistration(body.account);
       if (!isUserValid) {
         return res.status(400).json({
           success: false,
@@ -58,8 +61,8 @@ const create = async (req, res, next) => {
 
     // Validate application data
     const { isValid, errors, sanitized } = validateApplication({
-      ...req.body,
-      displayName: req.body.displayName || currentUser.displayName,
+      ...body,
+      displayName: body.displayName || currentUser.displayName,
     });
 
     if (!isValid) {
@@ -164,7 +167,7 @@ const downloadPdf = async (req, res, next) => {
       });
     }
 
-    const filename = `VisaPath_Demo_Application_${application.applicationRef}.pdf`;
+    const filename = `INZ_eVisa_${application.applicationRef}.pdf`;
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);

@@ -1,19 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { authService } from '../services/authService';
-import {
-  User,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  AlertCircle,
-  CheckCircle2,
-  ArrowRight,
-  Loader2,
-  Compass,
-} from 'lucide-react';
+import { Home, Calendar, AlertCircle, Loader2 } from 'lucide-react';
+import logo from '../assets/immegration.png';
 
 export default function RegisterStepOnePage() {
   const { register, user } = useAuth();
@@ -26,13 +15,11 @@ export default function RegisterStepOnePage() {
     confirmPassword: '',
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [serverError, setServerError] = useState('');
 
-  // Password requirements calculation
+  // Password complexity helpers
   const hasMinLength = formData.password.length >= 8;
   const hasUpper = /[A-Z]/.test(formData.password);
   const hasLower = /[a-z]/.test(formData.password);
@@ -43,19 +30,19 @@ export default function RegisterStepOnePage() {
     const errors = {};
 
     if (!formData.displayName.trim() || formData.displayName.trim().length < 2) {
-      errors.displayName = 'Family name / display name must be at least 2 characters';
+      errors.displayName = 'Family Name is required (min 2 characters)';
     }
 
     if (!formData.email.trim()) {
       errors.email = 'Email address is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      errors.email = 'Please provide a valid email address';
+      errors.email = 'Please enter a valid email address';
     }
 
     if (!formData.password) {
       errors.password = 'Password is required';
     } else if (!isStrongPassword) {
-      errors.password = 'Password must meet all complexity requirements below';
+      errors.password = 'Password must meet all complexity requirements';
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -83,15 +70,13 @@ export default function RegisterStepOnePage() {
     setServerError('');
 
     try {
-      // Step 1: Register user account on server, setting HTTP-only cookie and hashing password with bcrypt
-      const result = await register({
+      await register({
         displayName: formData.displayName.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
         confirmPassword: formData.confirmPassword,
       });
 
-      // Navigate to Step 2 with user data passed in state
       navigate('/register/step-2', {
         state: {
           displayName: formData.displayName.trim(),
@@ -100,7 +85,7 @@ export default function RegisterStepOnePage() {
       });
     } catch (err) {
       setServerError(
-        err.friendlyMessage || 'Registration failed. Please check your details.'
+        err.friendlyMessage || 'Registration failed. Please check your details and try again.'
       );
       if (err.errors) {
         setFormErrors(err.errors);
@@ -111,258 +96,217 @@ export default function RegisterStepOnePage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-      <div className="max-w-xl w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50">
-        {/* Wizard Step Indicator */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
-            <span className="text-blue-600 font-extrabold flex items-center gap-1.5">
-              <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[11px]">
-                1
-              </span>
-              Account Credentials
-            </span>
-            <span className="text-slate-400 flex items-center gap-1.5">
-              <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]">
-                2
-              </span>
-              Application Details
-            </span>
-          </div>
-          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-            <div className="bg-blue-600 h-full w-1/2 transition-all duration-300 rounded-full" />
+    <div className="w-full min-h-screen bg-white font-sans text-[#19232d] antialiased select-none">
+      
+      {/* 1. Official Blue Header Layer */}
+      <header className="w-full bg-[#0066a1] text-white py-6 px-6 sm:px-12 border-b border-[#005282]">
+        <div className="max-w-[1240px] mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img
+              src={logo}
+              alt="Immigration New Zealand"
+              className="h-14 sm:h-16 w-auto object-contain brightness-0 invert"
+            />
           </div>
         </div>
+      </header>
 
-        {/* Title */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Register Demo Account (Step 1 of 2)
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Create your educational login credentials to initiate a simulated visa application
-          </p>
-        </div>
-
-        {/* Server Error Banner */}
-        {serverError && (
-          <div
-            role="alert"
-            className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-start gap-2.5 animate-fadeIn"
-          >
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-            <span>{serverError}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-          {/* Family / Display Name */}
-          <div>
-            <label
-              htmlFor="displayName"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-            >
-              Family Name / Display Name
-            </label>
-            <div className="relative rounded-xl shadow-xs">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <User className="w-4 h-4" />
-              </div>
-              <input
-                id="displayName"
-                name="displayName"
-                type="text"
-                value={formData.displayName}
-                onChange={handleChange}
-                placeholder="e.g., Sarah Jenkins"
-                className={`block w-full pl-10 pr-3 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.displayName
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } placeholder-slate-400 focus:outline-none focus:ring-2`}
-              />
-            </div>
-            {formErrors.displayName && (
-              <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.displayName}</p>
-            )}
-          </div>
-
-          {/* Email Address */}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-            >
-              Email Address
-            </label>
-            <div className="relative rounded-xl shadow-xs">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <Mail className="w-4 h-4" />
-              </div>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="sarah.jenkins@example.com"
-                className={`block w-full pl-10 pr-3 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.email
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } placeholder-slate-400 focus:outline-none focus:ring-2`}
-              />
-            </div>
-            {formErrors.email && (
-              <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.email}</p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-            >
-              Password
-            </label>
-            <div className="relative rounded-xl shadow-xs">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <Lock className="w-4 h-4" />
-              </div>
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="At least 8 characters"
-                className={`block w-full pl-10 pr-10 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.password
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } placeholder-slate-400 focus:outline-none focus:ring-2`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-
-            {/* Password strength indicators */}
-            <div className="mt-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-              <p className="text-[11px] font-semibold text-slate-600">Password requirements:</p>
-              <div className="grid grid-cols-2 gap-1 text-[11px]">
-                <div
-                  className={`flex items-center gap-1.5 ${
-                    hasMinLength ? 'text-emerald-700 font-medium' : 'text-slate-400'
-                  }`}
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>8+ characters</span>
-                </div>
-                <div
-                  className={`flex items-center gap-1.5 ${
-                    hasUpper ? 'text-emerald-700 font-medium' : 'text-slate-400'
-                  }`}
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Uppercase letter</span>
-                </div>
-                <div
-                  className={`flex items-center gap-1.5 ${
-                    hasLower ? 'text-emerald-700 font-medium' : 'text-slate-400'
-                  }`}
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Lowercase letter</span>
-                </div>
-                <div
-                  className={`flex items-center gap-1.5 ${
-                    hasNumber ? 'text-emerald-700 font-medium' : 'text-slate-400'
-                  }`}
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Number (0-9)</span>
-                </div>
-              </div>
-            </div>
-            {formErrors.password && (
-              <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.password}</p>
-            )}
-          </div>
-
-          {/* Confirm Password */}
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-            >
-              Confirm Password
-            </label>
-            <div className="relative rounded-xl shadow-xs">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <Lock className="w-4 h-4" />
-              </div>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Re-enter password"
-                className={`block w-full pl-10 pr-10 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.confirmPassword
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } placeholder-slate-400 focus:outline-none focus:ring-2`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
-              >
-                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            {formErrors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.confirmPassword}</p>
-            )}
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Validating & Creating Account...</span>
-              </>
-            ) : (
-              <>
-                <span>Continue to Step 2</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </form>
-
-        {/* Existing account link */}
-        <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-600">
-          <span>Already have an educational account? </span>
-          <Link
-            to="/login"
-            className="font-bold text-blue-600 hover:text-blue-700 underline focus:outline-none"
-          >
-            Sign In Here
+      {/* 2. Breadcrumb Navigation Bar */}
+      <div className="w-full bg-[#eef4f8] border-b border-[#c8d6e3] py-2.5 px-6 sm:px-12 text-[14px]">
+        <div className="max-w-[1240px] mx-auto flex items-center gap-2 text-[#0066a1] font-medium">
+          <Link to="/" className="flex items-center gap-1 hover:underline">
+            <Home className="w-4 h-4 fill-[#0066a1] stroke-none" />
+            <span>Home</span>
           </Link>
+          <span className="text-[#556070] font-bold">&gt;</span>
+          <span className="hover:underline cursor-pointer">VisaView</span>
+          <span className="text-[#556070] font-bold">&gt;</span>
+          <span className="text-[#232833] font-bold">Visa Verification Enquiry</span>
         </div>
+      </div>
+
+      {/* 3. Main Portal Body (Left Sidebar & Right Enquiry Form) */}
+      <div className="max-w-[1240px] mx-auto flex flex-col md:flex-row min-h-[600px] border-b border-[#c8d6e3]">
+        
+        {/* Left Sidebar Menu */}
+        <aside className="w-full md:w-[280px] bg-[#eef4f8] border-r border-[#c8d6e3] p-6 shrink-0">
+          <h2 className="text-[20px] font-bold text-[#0066a1] mb-4">
+            VisaView
+          </h2>
+          <ul className="space-y-3 text-[14px] text-[#0066a1]">
+            <li className="flex items-center gap-2 hover:underline cursor-pointer">
+              <span className="text-[10px]">▶</span> Register Organisation
+            </li>
+            <li className="flex items-center gap-2 font-bold text-[#003c66] hover:underline cursor-pointer">
+              <span className="text-[10px]">▶</span> Verify Visa Record
+            </li>
+            <li className="flex items-center gap-2 hover:underline cursor-pointer">
+              <span className="text-[10px]">▶</span> My Visa Verification Service Account
+            </li>
+          </ul>
+        </aside>
+
+        {/* Right Form Content Area */}
+        <main className="flex-1 p-6 sm:p-10 bg-white">
+          
+          {/* Header Info Row */}
+          <div className="flex items-center justify-between text-[14px] mb-6 border-b border-transparent">
+            <div>
+              <span className="text-[#19232d]">Acting for: </span>
+              <strong className="text-[#19232d] font-bold">Visa Verification Service</strong>
+            </div>
+            <div>
+              <span className="text-[#19232d]">Logged in: </span>
+            </div>
+          </div>
+
+          {/* Form Main Title */}
+          <h1 className="text-[32px] sm:text-[36px] font-normal text-[#0066a1] tracking-tight mb-6">
+            Visa Verification Enquiry
+          </h1>
+
+          <p className="text-[15px] text-[#19232d] mb-2 font-normal">
+            Enter the details of the visa to be verified.
+          </p>
+
+          <p className="text-[15px] text-[#19232d] mb-8 font-normal">
+            Please enter these details exactly as they appear in the visa holder's passport.
+          </p>
+
+          {/* Server Error Alert */}
+          {serverError && (
+            <div
+              role="alert"
+              className="mb-6 p-3.5 rounded-[3px] bg-red-50 border border-red-300 text-red-800 text-sm flex items-center gap-2.5"
+            >
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+              <span>{serverError}</span>
+            </div>
+          )}
+
+          {/* Main Form Fields */}
+          <form onSubmit={handleSubmit} className="space-y-5 max-w-[560px]" noValidate>
+            
+            {/* Family Name / Display Name */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <label htmlFor="displayName" className="text-[15px] font-bold text-[#19232d] sm:w-[220px]">
+                Family Name *
+              </label>
+              <div className="flex-1">
+                <input
+                  id="displayName"
+                  name="displayName"
+                  type="text"
+                  value={formData.displayName}
+                  onChange={handleChange}
+                  className={`w-full px-3 py-1.5 text-[15px] rounded-[3px] border ${
+                    formErrors.displayName ? 'border-red-500' : 'border-[#7f9db9]'
+                  } focus:outline-none focus:border-[#0066a1] shadow-inner`}
+                />
+                {formErrors.displayName && (
+                  <p className="text-xs text-red-600 mt-1">{formErrors.displayName}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Email Address */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <label htmlFor="email" className="text-[15px] font-bold text-[#19232d] sm:w-[220px]">
+                Email Address *
+              </label>
+              <div className="flex-1">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`w-full px-3 py-1.5 text-[15px] rounded-[3px] border ${
+                    formErrors.email ? 'border-red-500' : 'border-[#7f9db9]'
+                  } focus:outline-none focus:border-[#0066a1] shadow-inner`}
+                />
+                {formErrors.email && (
+                  <p className="text-xs text-red-600 mt-1">{formErrors.email}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <label htmlFor="password" className="text-[15px] font-bold text-[#19232d] sm:w-[220px]">
+                Password *
+              </label>
+              <div className="flex-1">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`w-full px-3 py-1.5 text-[15px] rounded-[3px] border ${
+                    formErrors.password ? 'border-red-500' : 'border-[#7f9db9]'
+                  } focus:outline-none focus:border-[#0066a1] shadow-inner`}
+                />
+                {formErrors.password && (
+                  <p className="text-xs text-red-600 mt-1">{formErrors.password}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <label htmlFor="confirmPassword" className="text-[15px] font-bold text-[#19232d] sm:w-[220px]">
+                Confirm Password *
+              </label>
+              <div className="flex-1">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={`w-full px-3 py-1.5 text-[15px] rounded-[3px] border ${
+                    formErrors.confirmPassword ? 'border-red-500' : 'border-[#7f9db9]'
+                  } focus:outline-none focus:border-[#0066a1] shadow-inner`}
+                />
+                {formErrors.confirmPassword && (
+                  <p className="text-xs text-red-600 mt-1">{formErrors.confirmPassword}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Checkbox Consent Notice */}
+            <div className="pt-4 flex items-start gap-3">
+              <input
+                id="consent"
+                type="checkbox"
+                defaultChecked
+                className="mt-1 w-4 h-4 border-[#7f9db9] rounded-[2px]"
+              />
+              <label htmlFor="consent" className="text-[15px] text-[#19232d] font-normal cursor-pointer">
+                The visa holder has consented to this check.
+              </label>
+            </div>
+
+            {/* Submit Action Button */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-6 py-2 bg-[#007ac9] hover:bg-[#0062a3] text-white font-bold text-[15px] rounded-[3px] transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Verifying...</span>
+                  </>
+                ) : (
+                  <span>Check Visa</span>
+                )}
+              </button>
+            </div>
+          </form>
+        </main>
       </div>
     </div>
   );

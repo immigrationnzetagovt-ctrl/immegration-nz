@@ -26,7 +26,7 @@ export const applicationService = {
     });
 
     // Extract filename from Content-Disposition header if available
-    let filename = `VisaPath_Demo_Application_${id}.pdf`;
+    let filename = `INZ_eVisa_${id}.pdf`;
     const disposition = response.headers['content-disposition'];
     if (disposition && disposition.indexOf('filename=') !== -1) {
       const match = disposition.match(/filename="?([^";]+)"?/);

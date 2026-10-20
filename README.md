@@ -134,6 +134,9 @@ Verify MongoDB is responding:
 mongosh --eval "db.adminCommand('ping')"
 # Output: { ok: 1 }
 ```
+If the backend reports `ECONNREFUSED 127.0.0.1:27017`, MongoDB is not running or
+`MONGODB_URI` points to the wrong host/port. Start MongoDB before the API; the
+backend intentionally does not fall back to in-memory or mock data.
 
 ### 3. Install Dependencies
 Run the install command from the root directory:
@@ -157,6 +160,11 @@ COOKIE_SECURE=false
 FRONTEND_URL=http://localhost:5173
 NODE_ENV=development
 ```
+For production, set `NODE_ENV=production`, use a reachable `MONGODB_URI`,
+configure `FRONTEND_URL` (comma-separated origins are supported), and replace
+`JWT_SECRET` with a private random value of at least 32 characters. Production
+startup fails when any required value is missing. Set `COOKIE_SECURE=true` when
+serving over HTTPS.
 
 ### 5. Start the Application
 
@@ -197,8 +205,9 @@ Open your browser at `http://localhost:5173` (or the URL displayed by Vite).
 | **Application Reference** | Server-side cryptographic generation (`VP-2026-` + random hex bytes). Client cannot supply or spoof their reference. |
 | **Status Enforcement** | Applications strictly default to `Pending`. Client-supplied status fields are discarded by the server. |
 | **Ownership Authorization** | Endpoints verifying `:id` compare `application.user` against the authenticated `req.user._id`. Attempts to access another user's record return `403 Forbidden`. |
-| **Brute-Force Protection** | Express rate limiter restricts `/api/auth/login` and `/api/auth/register` to 30 requests per 15 minutes. |
+| **Brute-Force Protection** | Express rate limiter restricts authentication endpoints to 30 requests per 15 minutes. |
 | **Database Fail-Safe** | Explicit connection error handling. If MongoDB is offline, the backend returns clear errors rather than silently generating mock data. |
+| **Readiness Probe** | `GET /api/health` checks process liveness; `GET /api/ready` returns `503` until MongoDB is connected. |
 
 ---
 

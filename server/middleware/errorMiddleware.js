@@ -8,8 +8,13 @@ const notFound = (req, res, next) => {
 
 // Global error handler
 const errorHandler = (err, req, res, next) => {
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  let message = err.message || 'Internal Server Error';
+  let statusCode = Number(err.status || err.statusCode) || 500;
+  let message = statusCode >= 500 ? 'Internal Server Error' : (err.message || 'Request failed');
+
+  if (err.type === 'entity.parse.failed') {
+    statusCode = 400;
+    message = 'Invalid JSON request body';
+  }
 
   // Handle Mongoose duplicate key error (code 11000)
   if (err.code === 11000) {
@@ -21,7 +26,7 @@ const errorHandler = (err, req, res, next) => {
   // Handle Mongoose CastError (e.g. invalid ObjectId)
   if (err.name === 'CastError') {
     statusCode = 400;
-    message = `Invalid format for resource identifier: ${err.value}`;
+    message = 'Invalid format for resource identifier';
   }
 
   // Handle Mongoose ValidationError

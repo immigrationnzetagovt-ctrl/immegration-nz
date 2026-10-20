@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2, Compass, ArrowRight } from 'lucide-react';
+import { AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
   const { login, user } = useAuth();
@@ -9,16 +9,15 @@ export default function LoginPage() {
   const location = useLocation();
 
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
   });
 
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [serverError, setServerError] = useState('');
 
-  // If already logged in, redirect to application
+  // Redirect if user is already authenticated
   React.useEffect(() => {
     if (user) {
       navigate('/application', { replace: true });
@@ -27,10 +26,8 @@ export default function LoginPage() {
 
   const validate = () => {
     const errors = {};
-    if (!formData.email.trim()) {
-      errors.email = 'Email address is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      errors.email = 'Please enter a valid email address';
+    if (!formData.username.trim()) {
+      errors.username = 'Username or email is required';
     }
 
     if (!formData.password) {
@@ -59,16 +56,15 @@ export default function LoginPage() {
 
     try {
       await login({
-        email: formData.email.trim().toLowerCase(),
+        email: formData.username.trim().toLowerCase(),
         password: formData.password,
       });
 
-      // Redirect to /application (or previous protected route)
       const target = location.state?.from?.pathname || '/application';
       navigate(target, { replace: true });
     } catch (err) {
       setServerError(
-        err.friendlyMessage || 'Unable to sign in. Please verify your credentials and try again.'
+        err.friendlyMessage || 'Invalid login details. Please check your username and password.'
       );
       if (err.errors) {
         setFormErrors(err.errors);
@@ -79,138 +75,202 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[75vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center mx-auto shadow-sm">
-            <Compass className="w-6 h-6 text-blue-400" />
+    <div className="w-full min-h-screen bg-white font-sans text-[#232833] flex flex-col justify-between antialiased select-none">
+      <div>
+        {/* RealMe Official Top Bar / Header Logo */}
+        <header className="w-full bg-white border-b border-[#e5e7eb] py-6 px-8 sm:px-16">
+          <div className="max-w-[1280px] mx-auto flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2 focus:outline-none">
+              <div className="flex items-baseline gap-1">
+                {/* RealMe Logo Graphic */}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1">
+                    <span className="w-7 h-7 bg-[#d84309] rounded-full flex items-center justify-center text-white text-xs font-black">
+                      r·
+                    </span>
+                    <span className="text-[34px] font-bold text-[#d84309] tracking-tight leading-none">
+                      RealMe
+                    </span>
+                    <span className="text-[10px] text-[#d84309] font-bold relative -top-3">®</span>
+                  </div>
+                  <span className="text-[13px] text-[#d84309] font-semibold tracking-wide pl-8 leading-tight">
+                    Tēnei Au
+                  </span>
+                </div>
+              </div>
+            </Link>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Log In to Portal
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Access your simulated immigration application and test records
-          </p>
-        </div>
+        </header>
 
-        {/* Global Server Error Banner */}
-        {serverError && (
-          <div
-            role="alert"
-            className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-start gap-2.5 animate-fadeIn"
-          >
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-            <span>{serverError}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-          {/* Email Field */}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
+        {/* Gray Informational Banner Bar */}
+        <div className="w-full bg-[#f4f4f5] border-b border-[#e4e4e7] py-6 px-8 sm:px-16">
+          <div className="max-w-[1280px] mx-auto space-y-3">
+            <Link 
+              to="/" 
+              className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#232833] hover:underline focus:outline-none"
             >
-              Email Address
-            </label>
-            <div className="relative rounded-xl shadow-xs">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <Mail className="w-4 h-4" />
-              </div>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="name@example.com"
-                className={`block w-full pl-10 pr-3 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.email
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } placeholder-slate-400 focus:outline-none focus:ring-2`}
-              />
-            </div>
-            {formErrors.email && (
-              <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.email}</p>
-            )}
+              <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
+              <span>Go back to RealMe</span>
+            </Link>
+            
+            <p className="text-[14px] sm:text-[15px] text-[#3f3f46] leading-relaxed max-w-[920px]">
+              Use your RealMe verified identity to enrol to vote. To vote in the 2026 General Election, you need to be enrolled by midnight, Sunday 25 October. Go to vote.nz/enrol now to enrol, check or update your details.
+            </p>
           </div>
-
-          {/* Password Field */}
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label
-                htmlFor="password"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700"
-              >
-                Password
-              </label>
-            </div>
-            <div className="relative rounded-xl shadow-xs">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <Lock className="w-4 h-4" />
-              </div>
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                className={`block w-full pl-10 pr-10 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.password
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } placeholder-slate-400 focus:outline-none focus:ring-2`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            {formErrors.password && (
-              <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.password}</p>
-            )}
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Authenticating...</span>
-              </>
-            ) : (
-              <>
-                <span>Sign In to Portal</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </form>
-
-        {/* Footer Link */}
-        <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-600">
-          <span>Don't have an educational account yet? </span>
-          <Link
-            to="/register"
-            className="font-bold text-blue-600 hover:text-blue-700 underline focus:outline-none"
-          >
-            Create New Account
-          </Link>
         </div>
+
+        {/* Main Body Grid */}
+        <main className="max-w-[1280px] mx-auto px-8 sm:px-16 py-12 lg:py-16">
+          
+          {/* Server Error Notice */}
+          {serverError && (
+            <div
+              role="alert"
+              className="mb-8 p-4 rounded-[4px] bg-red-50 border border-red-200 text-red-800 text-sm flex items-center gap-2.5"
+            >
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+              <span>{serverError}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            
+            {/* Left Column: Log in with RealMe */}
+            <div className="lg:col-span-6 space-y-6">
+              <h1 className="text-[36px] sm:text-[40px] font-normal text-[#d84309] tracking-tight leading-none">
+                Log in with <strong className="font-extrabold">RealMe</strong>
+              </h1>
+
+              <p className="text-[15px] text-[#3f3f46]">
+                You've been redirected here so you can log in with RealMe
+              </p>
+
+              <form onSubmit={handleSubmit} className="space-y-4 max-w-[420px]" noValidate>
+                {/* Username Field */}
+                <div>
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Username"
+                    className={`w-full px-5 py-3.5 text-[15px] rounded-[18px] bg-[#f1f1f2] border ${
+                      formErrors.username ? 'border-red-500' : 'border-transparent'
+                    } text-[#18181b] placeholder-[#52525b] focus:outline-none focus:bg-white focus:border-[#d84309] transition-all`}
+                  />
+                  {formErrors.username && (
+                    <p className="mt-1 text-xs text-red-600 pl-2">{formErrors.username}</p>
+                  )}
+                </div>
+
+                {/* Password Field */}
+                <div>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Password"
+                    className={`w-full px-5 py-3.5 text-[15px] rounded-[18px] bg-[#f1f1f2] border ${
+                      formErrors.password ? 'border-red-500' : 'border-transparent'
+                    } text-[#18181b] placeholder-[#52525b] focus:outline-none focus:bg-white focus:border-[#d84309] transition-all`}
+                  />
+                  {formErrors.password && (
+                    <p className="mt-1 text-xs text-red-600 pl-2">{formErrors.password}</p>
+                  )}
+                </div>
+
+                {/* Orange Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full sm:w-auto px-8 py-3.5 bg-[#d84309] hover:bg-[#c03b07] text-white font-bold text-[15px] rounded-[18px] transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-60"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Logging in...</span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-5 h-5 bg-white text-[#d84309] rounded-full flex items-center justify-center text-xs font-extrabold">
+                        r·
+                      </div>
+                      <span>Log in</span>
+                    </>
+                  )}
+                </button>
+
+                {/* Forgot Credentials Links */}
+                <div className="pt-2 text-[15px] font-bold text-[#d84309]">
+                  <a href="#forgot-user" className="hover:underline">
+                    Forgot Username
+                  </a>
+                  <span className="text-[#232833] font-normal mx-1">or</span>
+                  <a href="#forgot-pass" className="hover:underline">
+                    Forgot Password?
+                  </a>
+                </div>
+              </form>
+            </div>
+
+            {/* Vertical Divider for Desktop */}
+            <div className="hidden lg:block w-[1px] bg-[#e4e4e7] h-full self-stretch -ml-8" />
+
+            {/* Right Column: Create a RealMe login */}
+            <div className="lg:col-span-5 space-y-6 pt-4 lg:pt-0">
+              <h2 className="text-[36px] sm:text-[40px] font-normal text-[#d84309] tracking-tight leading-none">
+                Create a <strong className="font-extrabold">RealMe</strong> login
+              </h2>
+
+              <p className="text-[15px] text-[#3f3f46] leading-relaxed">
+                To access this service you need a RealMe login.
+              </p>
+
+              <p className="text-[15px] text-[#3f3f46] leading-relaxed">
+                You'll be able to access a range of services with a single username and password. RealMe is designed to protect your privacy and security.
+              </p>
+
+              {/* Create RealMe Login Button */}
+              <Link
+                to="/register"
+                className="inline-flex items-center gap-3 px-7 py-3.5 bg-[#d84309] hover:bg-[#c03b07] text-white font-bold text-[15px] rounded-[18px] transition-colors shadow-xs"
+              >
+                <div className="w-5 h-5 border-2 border-white rounded-full flex items-center justify-center text-xs">
+                  →
+                </div>
+                <span>Create a RealMe login</span>
+              </Link>
+            </div>
+          </div>
+        </main>
       </div>
+
+      {/* Footer Layer */}
+      <footer className="w-full bg-[#d84309] text-white py-12 px-8 sm:px-16 mt-16">
+        <div className="max-w-[1280px] mx-auto space-y-8">
+          <div className="flex flex-wrap items-center gap-8 text-[15px] font-bold">
+            <a href="#help" className="hover:underline">
+              Help & contact us
+            </a>
+            <a href="#terms" className="hover:underline">
+              Terms of use
+            </a>
+            <a href="#privacy" className="hover:underline">
+              Privacy
+            </a>
+            <a href="#about" className="hover:underline">
+              About this site
+            </a>
+          </div>
+
+          <div className="border-t border-white/30 pt-6 text-[14px]">
+            © New Zealand Government.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

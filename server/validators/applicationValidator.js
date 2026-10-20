@@ -13,6 +13,7 @@ const escapeHtml = (unsafe) => {
 };
 
 const validateApplication = (data) => {
+  data = data && typeof data === 'object' && !Array.isArray(data) ? data : {};
   const errors = {};
 
   const displayName = sanitizeString(data.displayName);

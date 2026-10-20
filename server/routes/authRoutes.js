@@ -14,8 +14,8 @@ const { authLimiter } = require('../middleware/rateLimiter');
 router.post('/register', authLimiter, register);
 router.post('/login', authLimiter, login);
 
-// Validation helper (non rate-limited to avoid UX blocks during normal typing/wizards)
-router.post('/validate-step-one', validateStepOne);
+// Limit validation requests too, since each request checks the database.
+router.post('/validate-step-one', authLimiter, validateStepOne);
 
 // Logout
 router.post('/logout', logout);

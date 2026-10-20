@@ -4,7 +4,13 @@ const COOKIE_NAME = 'visapath_token';
 
 // Generate signed JWT token
 const generateToken = (userId) => {
-  const secret = process.env.JWT_SECRET || 'visapath_super_secret_jwt_key_2026_educational';
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET must be configured in production.');
+    }
+    throw new Error('JWT_SECRET is not configured.');
+  }
   const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
   return jwt.sign({ id: userId }, secret, { expiresIn });
 };

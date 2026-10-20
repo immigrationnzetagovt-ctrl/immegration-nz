@@ -1,111 +1,2341 @@
+@import "@fontsource/fira-sans/400.css";
+@import "@fontsource/fira-sans/500.css";
+@import "@fontsource/fira-sans/600.css";
+@import "@fontsource/fira-sans/700.css";
+@import "tailwindcss";
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
+  font-family: "Fira Sans", Arial, "Helvetica Neue", Helvetica, sans-serif;
+  color: #323849;
+  background: #fff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-body {
-  margin: 0;
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+* {
   box-sizing: border-box;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
+body {
+  min-width: 320px;
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-code {
+button,
+input,
+select {
+  font: inherit;
+}
+
+.site-header {
+  position: relative;
+  z-index: 20;
+  background: #fff;
+  border-bottom: 1px solid #cfd3da;
+}
+
+.header-inner {
+  position: relative;
+  z-index: 3;
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.header-top {
+  min-height: 106px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #d4d6db;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  width: 205px;
+}
+
+.brand img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.utility-nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  font-size: 16px;
+}
+
+.utility-nav a:not(.login-link):hover,
+.primary-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.menu-scrim {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgb(0 0 0 / 72%);
+  cursor: default;
+}
+
+.utility-nav .login-link,
+.blue-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: #087dc1;
+  color: #fff;
+  font-weight: 700;
+}
+
+.utility-nav .login-link {
+  min-width: 82px;
+  min-height: 43px;
+}
+
+.login-link:hover,
+.blue-button:hover {
+  background: #056aa7;
+}
+
+.primary-nav {
+  min-height: 79px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.primary-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(24px, 3.4vw, 52px);
+}
+
+.primary-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  white-space: nowrap;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.primary-link strong {
+  font-weight: 700;
+}
+
+.primary-link:hover,
+.primary-link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.primary-link.is-active .nav-chevron {
+  transform: rotate(180deg);
+}
+
+.primary-link.is-active::after {
+  position: absolute;
+  z-index: 5;
+  bottom: -24px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-right: 9px solid transparent;
+  border-bottom: 11px solid #20232d;
+  border-left: 9px solid transparent;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.nav-chevron {
+  width: 11px;
+  height: 8px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  transition: transform 160ms ease;
+}
+
+.desktop-navigation {
+  position: relative;
+}
+
+.mega-menu {
+  position: absolute;
+  z-index: 4;
+  top: 100%;
+  left: 50%;
+  width: 100vw;
+  min-height: 360px;
+  overflow: hidden;
+  padding: 78px max(50px, calc((100vw - 1400px) / 2)) 64px;
+  background: #20232d;
+  color: #fff;
+  transform: translateX(-50%);
+  animation: mega-menu-enter 180ms ease-out both;
+}
+
+@keyframes mega-menu-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.mega-menu-pattern {
+  bottom: -165px;
+  left: -170px;
+  width: 470px;
+  height: 430px;
+  color: #343a4d;
+  opacity: 0.82;
+  transform: rotate(90deg);
+}
+
+.mega-menu-close {
+  position: absolute;
+  top: 24px;
+  right: max(50px, calc((100vw - 1400px) / 2));
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 11px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.mega-menu-close svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
+
+.mega-menu-content {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(220px, 0.8fr) minmax(220px, 0.8fr);
+  gap: clamp(36px, 6vw, 100px);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.mega-menu-intro h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 22px;
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.mega-menu-intro h2 span {
+  font-weight: 400;
+}
+
+.mega-menu-intro h2 svg {
+  width: 21px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.mega-menu-intro p {
+  max-width: 365px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.mega-menu-links {
+  display: grid;
+  align-content: start;
+  gap: 22px;
+  margin: 0;
+  padding: 4px 0 0;
+  list-style: none;
+}
+
+.mega-menu-links a {
   font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+  line-height: 1.35;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.mega-menu-links a:hover,
+.mega-menu-links a:focus-visible {
+  color: #b8d9f2;
+}
+
+.mobile-header-actions,
+.mobile-menu-button,
+.mobile-drawer {
+  display: none;
+}
+
+.search-panel {
+  position: absolute;
+  z-index: 5;
+  top: 100%;
+  right: 0;
+  width: min(100vw, 550px);
+  padding: 24px;
+  border: 1px solid #d4d6db;
+  background: #fff;
+  box-shadow: 0 5px 18px rgb(0 0 0 / 18%);
+}
+
+.search-panel label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.search-panel > div {
+  display: flex;
+}
+
+.search-panel input {
+  min-width: 0;
+  flex: 1;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #858b95;
+}
+
+.search-panel button {
+  padding: 0 20px;
+  border: 0;
+  background: #087dc1;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.search-button {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #30394c;
+  cursor: pointer;
+}
+
+.search-icon {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.section-container {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 100px, 1400px);
+  margin: 0 auto;
+}
+
+.hero-banner {
+  position: relative;
+  min-height: 374px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: #062f59;
+  color: #fff;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 100px, 1400px);
+  margin: 0 auto;
+}
+
+.hero-content > p {
+  margin: 0 0 26px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.hero-content h1 {
+  max-width: 850px;
+  margin: 0;
+  font-size: clamp(34px, 3vw, 56px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.35px;
+}
+
+.koru-artwork {
+  position: absolute;
+  pointer-events: none;
+}
+
+.hero-pattern {
+  top: 0;
+  right: 0;
+  width: min(44vw, 900px);
+  height: 100%;
+  color: #0a4b7f;
+  opacity: 0.88;
+}
+
+.announcements-section {
+  position: relative;
+  overflow: hidden;
+  padding: 38px 0 86px;
+  background: #f2f2f2;
+}
+
+.announcements-pattern {
+  left: -230px;
+  bottom: -250px;
+  width: 620px;
+  height: 500px;
+  transform: rotate(180deg);
+  color: #dedfe2;
+  opacity: 0.75;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.section-heading h2,
+.top-visas-section h2,
+.find-visa-section h2 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.blue-button {
+  min-height: 40px;
+  padding: 0 22px;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.announcement-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+}
+
+.announcement-card {
+  min-height: 278px;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 25px 26px;
+  border-radius: 3px;
+  background: #fff;
+}
+
+.announcement-date {
+  margin: 0 0 12px;
+  color: #5c6372;
+  font-size: 12px;
+}
+
+.announcement-card h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  line-height: 1.28;
+  font-weight: 700;
+}
+
+.announcement-card h3 a:hover,
+.visa-card:hover h3 {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.announcement-description {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.42;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: auto;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 10px;
+  border-radius: 2px;
+  background: #e8f3f9;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.top-visas-section {
+  padding: 80px 0 82px;
+  background: #fff;
+}
+
+.top-visas-section h2 {
+  margin-bottom: 16px;
+}
+
+.visa-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.visa-card {
+  min-height: 152px;
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-content: start;
+  gap: 8px;
+  padding: 26px 24px;
+  border: 1px solid #d6d8dc;
+  border-radius: 4px;
+  background: #fff;
+  transition: box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.visa-card:hover {
+  border-color: #c6c9ce;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 14%);
+}
+
+.visa-badge {
+  width: 20px;
+  height: 24px;
+  margin-top: 1px;
+  fill: none;
+  stroke: #1584ca;
+  stroke-width: 1.2;
+}
+
+.visa-card h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.visa-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.evisa-page {
+  min-height: calc(100vh - 186px);
+  background: #fff;
+}
+
+.evisa-container {
+  width: min(100% - 48px, 1180px);
+  margin: 0 auto;
+}
+
+.evisa-notice {
+  padding: 26px 0;
+  background: #f1f2f3;
+  color: #3c4148;
+}
+
+.evisa-notice p {
+  max-width: 760px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.evisa-notice .evisa-notice-title {
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.evisa-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  padding-top: 48px;
+  padding-bottom: 58px;
+}
+
+.evisa-primary {
+  padding-right: 54px;
+  border-right: 1px solid #d9dce0;
+}
+
+.evisa-eyebrow {
+  margin: 0 0 10px;
+  color: #087dc1;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.evisa-primary h1 {
+  margin: 0 0 18px;
+  color: #163b5b;
+  font-size: clamp(32px, 3.2vw, 44px);
+  line-height: 1.15;
+}
+
+.evisa-primary > p:not(.evisa-eyebrow, .evisa-security-note),
+.evisa-help p {
+  max-width: 520px;
+  margin: 0 0 22px;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.evisa-continue {
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 20px;
+  border-radius: 4px;
+  background: #087dc1;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  transition: background-color 150ms ease;
+}
+
+.evisa-continue:hover,
+.evisa-continue:focus-visible {
+  background: #056aa7;
+}
+
+.evisa-continue span {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.evisa-security-note {
+  max-width: 520px;
+  margin: 18px 0 0;
+  color: #535b65;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.evisa-help {
+  padding-top: 4px;
+}
+
+.evisa-help h2 {
+  margin: 0 0 16px;
+  color: #163b5b;
+  font-size: 25px;
+}
+
+.evisa-help a {
+  color: #056aa7;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.evisa-help a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.find-visa-section {
+  position: relative;
+  min-height: 222px;
+  overflow: hidden;
+  padding: 60px 0 38px;
+  background: #117fc2;
+  color: #fff;
+}
+
+.find-visa-section h2 {
+  margin-bottom: 24px;
+}
+
+.visa-select-label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 22px;
+}
+
+.visa-select-label select {
+  max-width: 180px;
+  padding: 0 20px 4px 0;
+  border: 0;
+  border-bottom: 1px solid rgb(255 255 255 / 80%);
+  border-radius: 0;
+  appearance: none;
+  background: transparent;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.visa-select-label select:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+.visa-select-label option {
+  color: #323849;
+}
+
+.find-visa-pattern {
+  top: 8px;
+  right: -130px;
+  width: 390px;
+  height: 310px;
+  color: #55a3d4;
+  opacity: 0.6;
+  transform: rotate(90deg);
+}
+
+.journeys-section {
+  padding: 82px 0 86px;
+  background: #fff;
+}
+
+.journey-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px 24px;
+}
+
+.journey-card {
+  overflow: hidden;
+  border: 1px solid #e0e1e4;
+  border-radius: 4px;
+  background: #fff;
+  transition: box-shadow 150ms ease;
+}
+
+.journey-card:hover {
+  box-shadow: 0 3px 12px rgb(0 0 0 / 14%);
+}
+
+.journey-image {
+  position: relative;
+  height: 310px;
+  overflow: hidden;
+  background: #dce7ec;
+}
+
+.journey-image::after {
+  position: absolute;
+  inset: 50% 0 0;
+  background: linear-gradient(transparent, rgb(0 0 0 / 35%));
+  content: "";
+}
+
+.journey-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.journey-arrow {
+  position: absolute;
+  z-index: 1;
+  bottom: 22px;
+  left: 24px;
+  color: #fff;
+  font-size: 50px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.journey-copy {
+  min-height: 112px;
+  padding: 20px 24px 22px;
+}
+
+.journey-copy h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.journey-copy p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.site-footer {
+  position: relative;
+  overflow: hidden;
+  min-height: 475px;
+  padding: 68px 0 26px;
+  background: #323849;
+  color: #fff;
+}
+
+.footer-pattern {
+  right: 0;
+  bottom: -350px;
+  left: 0;
+  width: 100%;
+  height: 500px;
+  color: #2c3343;
+  opacity: 0.55;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: minmax(300px, 1.65fr) 1fr;
+  column-gap: 56px;
+  row-gap: 40px;
+}
+
+.footer-lookup h2 {
+  margin: 0 0 20px;
+  font-size: 36px;
+  line-height: 1.2;
+}
+
+.footer-lookup input {
+  width: min(100%, 429px);
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #aeb3c0;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+}
+
+.footer-lookup input::placeholder {
+  color: #d8dbe2;
+}
+
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px;
+}
+
+.footer-links h3 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.footer-links a {
+  display: block;
+  width: fit-content;
+  margin: 0 0 7px;
+  font-size: 12px;
+}
+
+.footer-links a:hover,
+.footer-bottom a:hover {
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0;
+  margin-top: 26px;
+  font-size: 11px;
+}
+
+.footer-partners {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 100px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgb(255 255 255 / 35%);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.footer-legal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 20px;
+  font-size: 11px;
+}
+
+.footer-legal nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-legal small {
+  white-space: nowrap;
+}
+
+.not-found {
+  padding: 40px;
+}
+
+.not-found h1 {
+  margin: 0 0 12px;
+}
+
+.not-found a {
+  color: #087dc1;
+}
+
+@media (max-width: 900px) {
+  .section-container {
+    width: min(100% - 64px, 1400px);
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1200px) {
+  .header-inner {
+    padding: 0 50px;
+  }
+
+  .header-top {
+    min-height: 84px;
+  }
+
+  .primary-nav {
+    min-height: 63px;
+  }
+
+  .primary-links {
+    gap: clamp(20px, 3vw, 38px);
+  }
+
+  .primary-link {
+    gap: 6px;
+    font-size: 17px;
+  }
+
+  .mega-menu {
+    min-height: 360px;
+    padding: 78px 50px 54px;
+  }
+
+  .mega-menu-close {
+    right: 50px;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-content {
+    width: min(100% - 80px, 1400px);
+  }
+
+  .announcement-grid {
+    gap: 16px;
+  }
+
+  .announcement-card {
+    padding: 24px 18px;
+  }
+
+  .journey-image {
+    height: 250px;
+  }
+
+  .footer-content {
+    column-gap: 40px;
+  }
+}
+
+@media (max-width: 960px) {
+  .header-inner {
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .header-top {
+    min-height: 82px;
+  }
+
+  .brand {
+    width: 170px;
+  }
+
+  .section-container {
+    width: calc(100% - 40px);
+  }
+
+    .site-header {
+      z-index: 30;
+    }
+
+    .header-inner {
+      padding: 0 24px;
+    }
+
+    .header-top {
+      min-height: 74px;
+      border-bottom: 0;
+    }
+
+    .brand {
+      width: 165px;
+    }
+
+    .utility-nav,
+    .desktop-navigation {
+      display: none;
+    }
+
+    .mobile-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mobile-header-actions .search-button {
+      display: inline-flex;
+    }
+
+    .mobile-menu-button {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #30394c;
+      cursor: pointer;
+    }
+
+    .hamburger-mark {
+      width: 19px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .hamburger-mark i {
+      width: 19px;
+      height: 2px;
+      display: block;
+      background: currentColor;
+    }
+
+    .mobile-close-mark {
+      font-size: 34px;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .mobile-drawer {
+      position: fixed;
+      z-index: 10;
+      inset: 0;
+      display: block;
+      overflow-y: auto;
+      padding: 18px 24px 30px;
+      background: #20232d;
+      color: #fff;
+      animation: mobile-drawer-enter 180ms ease-out both;
+    }
+
+    @keyframes mobile-drawer-enter {
+      from {
+        opacity: 0;
+        transform: translateX(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .mobile-drawer-header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 54px;
+      margin-bottom: 18px;
+    }
+
+    .mobile-drawer-header .brand {
+      width: 154px;
+    }
+
+    .mobile-drawer-header .brand img {
+      filter: brightness(0) invert(1);
+    }
+
+    .mobile-drawer-header > button {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: #555b6c;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .mobile-drawer-header > button span {
+      font-size: 29px;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .mobile-drawer-links,
+    .mobile-utility-links {
+      position: relative;
+      z-index: 1;
+    }
+
+    .mobile-nav-item {
+      border-top: 1px solid #464b59;
+    }
+
+    .mobile-nav-item:last-child {
+      border-bottom: 1px solid #464b59;
+    }
+
+    .mobile-nav-item > button {
+      width: 100%;
+      min-height: 43px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      text-align: left;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .mobile-nav-item > button strong {
+      font-weight: 700;
+    }
+
+    .mobile-nav-item > button .nav-chevron {
+      width: 13px;
+      height: 9px;
+      transform: rotate(-90deg);
+    }
+
+    .mobile-nav-item.is-expanded > button .nav-chevron {
+      transform: rotate(0);
+    }
+
+    .mobile-submenu {
+      display: grid;
+      gap: 12px;
+      padding: 0 0 16px 12px;
+    }
+
+    .mobile-submenu a {
+      color: #e4e6eb;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .mobile-submenu a:hover,
+    .mobile-submenu a:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .mobile-utility-links {
+      display: grid;
+      justify-items: start;
+      gap: 24px;
+      padding-top: 32px;
+    }
+
+    .mobile-utility-links > a:not(.login-link) {
+      font-size: 14px;
+    }
+
+    .mobile-utility-links .login-link {
+      min-width: 78px;
+      min-height: 39px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      background: #e6295f;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .mobile-menu-pattern {
+      right: -170px;
+      bottom: -200px;
+      width: 450px;
+      height: 430px;
+      color: #343a4d;
+      opacity: 0.8;
+      transform: rotate(-90deg);
+    }
+
+    .search-panel {
+      position: absolute;
+      top: 74px;
+      right: 0;
+      width: 100%;
+    }
+  .hero-banner {
+    min-height: 390px;
+  }
+
+  .hero-content {
+    width: calc(100% - 40px);
+    transform: none;
+  }
+
+  .hero-content > p {
+    margin-bottom: 22px;
+    font-size: 17px;
+  }
+
+  .hero-content h1 {
+    max-width: 600px;
+    font-size: clamp(32px, 8vw, 42px);
+  }
+
+  .hero-break {
+    display: none;
+  }
+
+  .hero-pattern {
+    right: -95px;
+    width: 74%;
+    opacity: 0.55;
+  }
+
+  .announcements-section,
+  .top-visas-section,
+  .journeys-section {
+    padding: 54px 0;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 24px;
+  }
+
+  .section-heading h2,
+  .top-visas-section h2,
+  .find-visa-section h2 {
+    font-size: 25px;
+  }
+
+  .announcement-grid,
+  .visa-grid,
+  .journey-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .evisa-content {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-top: 34px;
+    padding-bottom: 42px;
+  }
+
+  .evisa-primary {
+    padding-right: 0;
+    padding-bottom: 30px;
+    border-right: 0;
+    border-bottom: 1px solid #d9dce0;
+  }
+
+  .evisa-primary h1 {
+    font-size: 34px;
+  }
+
+  .announcement-card {
+    min-height: auto;
+    padding: 24px;
+  }
+
+  .visa-card {
+    min-height: 0;
+    padding: 22px 18px;
+  }
+
+  .find-visa-section {
+    min-height: 200px;
+    padding: 38px 0;
+  }
+
+  .visa-select-label {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 18px;
+  }
+
+  .journey-image {
+    height: clamp(220px, 60vw, 340px);
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    row-gap: 30px;
+  }
+
+  .footer-lookup h2 {
+    font-size: 30px;
+  }
+
+  .footer-links {
+    gap: 18px;
+  }
+
+  .footer-bottom {
+    margin-top: 8px;
+  }
+
+  .footer-partners,
+  .footer-legal {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .footer-partners {
+    gap: 20px;
+    padding: 20px 0;
+  }
+
+  .footer-legal {
+    gap: 18px;
+    padding-top: 18px;
+  }
+
+  .footer-legal nav {
+    gap: 10px 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .utility-nav .login-link {
+    min-width: 68px;
+    min-height: 39px;
+  }
+
+  .brand {
+    width: 148px;
+  }
+
+  .footer-links {
+    grid-template-columns: 1fr;
+  }
+}
+
+.demo-portal {
+  min-height: 100vh;
+  background: #f4f6f3;
+  color: #193c3a;
+}
+
+.demo-portal-container,
+.visa-demo-container {
+  width: min(100% - 48px, 1120px);
+  margin: 0 auto;
+}
+
+.demo-portal-header {
+  background: #fff;
+  border-bottom: 1px solid #dce4df;
+}
+
+.demo-portal-header > div {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.demo-brand,
+.visa-demo-brand {
+  color: #164c47;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.demo-badge,
+.visa-demo-label {
+  padding: 8px 12px;
+  border: 1px solid #bdd6ce;
+  border-radius: 999px;
+  background: #f1f8f4;
+  color: #286d60;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.demo-portal-banner {
+  padding: 64px 0 72px;
+  background:
+    radial-gradient(ellipse at 88% 20%, rgb(171 210 181 / 35%), transparent 34%),
+    linear-gradient(120deg, #174e49 0%, #21675e 57%, #338171 100%);
+  color: #fff;
+}
+
+.demo-eyebrow,
+.visa-demo-kicker {
+  margin: 0 0 12px;
+  color: #b8e1cf;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.demo-portal-banner h1 {
+  margin: 0 0 13px;
+  font-size: clamp(34px, 5vw, 52px);
+  font-weight: 500;
+  letter-spacing: -1.4px;
+}
+
+.demo-portal-banner > div > p:last-child {
+  max-width: 600px;
+  margin: 0;
+  color: #e0f0e9;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.demo-portal-content {
+  padding-top: 36px;
+  padding-bottom: 70px;
+}
+
+.demo-portal-card {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 22px;
+  padding: 30px;
+  border: 1px solid #e0e7e2;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgb(30 69 56 / 7%);
+}
+
+.demo-card-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 16px;
+  background: #eaf5ee;
+  color: #28705f;
+  font-size: 24px;
+}
+
+.demo-portal-card h2 {
+  margin: 2px 0 10px;
+  color: #193c3a;
+  font-size: 24px;
+}
+
+.demo-portal-card p,
+.demo-portal-warning p {
+  max-width: 730px;
+  margin: 0;
+  color: #54645f;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.demo-primary-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 20px;
+  padding: 13px 17px;
+  border-radius: 7px;
+  background: #176a5d;
+  color: #fff;
+  font-weight: 700;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.demo-primary-link:hover {
+  transform: translateY(-1px);
+  background: #10574d;
+}
+
+.demo-primary-link span {
+  font-size: 20px;
+}
+
+.demo-portal-warning {
+  margin-top: 20px;
+  padding: 20px 22px;
+  border-left: 4px solid #d28c39;
+  border-radius: 5px;
+  background: #fff7e9;
+}
+
+.demo-portal-warning strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #75501f;
+}
+
+.demo-official-link {
+  margin: 26px 0 0;
+  color: #52645e;
+  font-size: 14px;
+}
+
+.demo-official-link a {
+  color: #176a5d;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.visa-demo-page {
+  min-height: 100vh;
+  background: #f4f6f3;
+  color: #1d3533;
+}
+
+.visa-demo-header {
+  background: #fff;
+  border-bottom: 1px solid #dce4df;
+}
+
+.visa-demo-header-inner {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.visa-demo-account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.visa-demo-account > span:first-child {
+  color: #43665a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.visa-demo-account > button {
+  padding: 8px 11px;
+  border: 1px solid #cbd8d1;
+  border-radius: 6px;
+  background: #fff;
+  color: #345b50;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.visa-demo-account > button:hover {
+  background: #f1f8f4;
+}
+
+.visa-demo-back-row {
+  padding: 22px 0 15px;
+}
+
+.visa-demo-back {
+  color: #39685e;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.visa-demo-back:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.visa-demo-intro {
+  padding: 30px 0 22px;
+}
+
+.visa-demo-kicker {
+  color: #44836e;
+}
+
+.visa-demo-intro h1 {
+  margin: 0 0 9px;
+  color: #1d4641;
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 500;
+  letter-spacing: -1px;
+  line-height: 1.16;
+}
+
+.visa-demo-intro > p:last-child {
+  margin: 0;
+  color: #5d6e68;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.visa-demo-disclaimer {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 16px;
+  align-items: start;
+  margin: 9px 0 25px;
+  padding: 16px 19px;
+  border: 1px solid #ecd8aa;
+  border-radius: 8px;
+  background: #fff8e9;
+  color: #685127;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.visa-demo-disclaimer strong {
+  font-size: 14px;
+}
+
+.visa-demo-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(240px, 0.8fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.visa-demo-form-panel,
+.visa-demo-side-panel,
+.visa-demo-records {
+  border: 1px solid #e0e7e2;
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(30 69 56 / 5%);
+}
+
+.visa-demo-form-panel {
+  padding: 26px 28px 24px;
+}
+
+.visa-demo-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e8eeea;
+}
+
+.visa-demo-panel-heading .visa-demo-kicker,
+.visa-demo-side-panel .visa-demo-kicker,
+.visa-demo-records .visa-demo-kicker {
+  margin-bottom: 6px;
+}
+
+.visa-demo-panel-heading h2,
+.visa-demo-records-heading h2 {
+  margin: 0;
+  color: #1d4641;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.visa-demo-step {
+  color: #a2b8ad;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.visa-demo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  padding-top: 21px;
+}
+
+.visa-demo-form label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+  color: #2a4641;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.visa-demo-form label > span {
+  display: inline;
+  color: #778780;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.visa-demo-form input,
+.visa-demo-form select,
+.visa-demo-form textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cbd8d1;
+  border-radius: 6px;
+  background: #fbfdfb;
+  padding: 10px 12px;
+  color: #243d38;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.visa-demo-form textarea {
+  min-height: 86px;
+  resize: vertical;
+}
+
+.visa-demo-form input:focus,
+.visa-demo-form select:focus,
+.visa-demo-form textarea:focus {
+  border-color: #38816d;
+  box-shadow: 0 0 0 3px rgb(56 129 109 / 14%);
+}
+
+.visa-demo-form input::placeholder,
+.visa-demo-form textarea::placeholder {
+  color: #98a7a0;
+}
+
+.visa-demo-field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.visa-demo-submit {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  align-self: flex-start;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 6px;
+  background: #176a5d;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 150ms ease;
+}
+
+.visa-demo-submit:hover {
+  background: #10574d;
+}
+
+.visa-demo-submit:disabled,
+.demo-auth-submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.visa-demo-submit span {
+  font-size: 19px;
+}
+
+.visa-demo-storage-note {
+  margin: -7px 0 0;
+  color: #73817c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.visa-demo-error,
+.visa-demo-success {
+  margin: 0;
+  padding: 11px 13px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.visa-demo-error {
+  border: 1px solid #eccaca;
+  background: #fff4f3;
+  color: #8b2e29;
+}
+
+.visa-demo-success {
+  border: 1px solid #c7e2d2;
+  background: #eff9f2;
+  color: #256343;
+}
+
+.visa-demo-side-panel {
+  position: relative;
+  overflow: hidden;
+  padding: 25px 23px;
+  background:
+    radial-gradient(circle at 110% -5%, rgb(111 169 140 / 17%) 0 110px, transparent 111px),
+    #eaf3ed;
+  box-shadow: none;
+}
+
+.visa-demo-side-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 25px;
+  place-items: center;
+  border-radius: 50%;
+  background: #1e6a5c;
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.visa-demo-side-panel h2 {
+  margin: 0 0 16px;
+  color: #214b42;
+  font-size: 21px;
+  line-height: 1.25;
+}
+
+.visa-demo-side-panel ul {
+  display: grid;
+  gap: 11px;
+  margin: 0 0 17px;
+  padding: 0;
+  color: #345d51;
+  font-size: 13px;
+  line-height: 1.45;
+  list-style: none;
+}
+
+.visa-demo-side-panel li::before {
+  content: "✓";
+  margin-right: 9px;
+  color: #24765e;
+  font-weight: 700;
+}
+
+.visa-demo-side-panel > p:last-child {
+  margin: 0;
+  padding-top: 15px;
+  border-top: 1px solid #d0e1d5;
+  color: #63786e;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.visa-demo-records {
+  margin: 24px 0 50px;
+  padding: 25px 28px;
+}
+
+.visa-demo-records-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 15px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e8eeea;
+}
+
+.visa-demo-records-heading h2 span {
+  margin-left: 5px;
+  color: #638274;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.visa-demo-records-heading > p {
+  margin: 0;
+  color: #778780;
+  font-size: 12px;
+}
+
+.visa-demo-empty {
+  margin: 18px 0 0;
+  padding: 22px;
+  border: 1px dashed #ccd9d1;
+  border-radius: 7px;
+  color: #718079;
+  font-size: 14px;
+  text-align: center;
+}
+
+.visa-demo-record-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding-top: 17px;
+}
+
+.visa-demo-record {
+  padding: 17px;
+  border: 1px solid #e1e9e4;
+  border-radius: 8px;
+  background: #fcfdfc;
+}
+
+.visa-demo-record-top {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.visa-demo-record-id {
+  color: #52826e;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.visa-demo-record h3 {
+  margin: 4px 0 0;
+  color: #23473e;
+  font-size: 17px;
+}
+
+.visa-demo-delete {
+  padding: 6px 9px;
+  border: 1px solid #e2cbc8;
+  border-radius: 5px;
+  background: #fff;
+  color: #9a4841;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.visa-demo-delete:hover {
+  background: #fff3f1;
+}
+
+.visa-demo-record dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.visa-demo-record dl div {
+  min-width: 0;
+}
+
+.visa-demo-record dt {
+  margin-bottom: 3px;
+  color: #7b8982;
+  font-size: 11px;
+}
+
+.visa-demo-record dd {
+  margin: 0;
+  color: #314b42;
+  font-size: 13px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.visa-demo-record-conditions {
+  margin: 14px 0 0;
+  padding-top: 11px;
+  border-top: 1px solid #e8eeea;
+  color: #61736a;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.visa-demo-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 15px;
+  padding: 8px 11px;
+  border-radius: 5px;
+  background: #e8f3ed;
+  color: #206653;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.visa-demo-download:hover {
+  background: #d8eae0;
+}
+
+.visa-demo-download span {
+  font-size: 16px;
+}
+
+.demo-auth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.8fr);
+  gap: 22px;
+  align-items: stretch;
+}
+
+.demo-auth-card,
+.demo-auth-safety {
+  padding: 30px;
+  border: 1px solid #e0e7e2;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgb(30 69 56 / 7%);
+}
+
+.demo-auth-kicker {
+  margin: 0 0 8px;
+  color: #44836e;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+.demo-auth-card h2,
+.demo-auth-safety h2 {
+  margin: 0 0 10px;
+  color: #193c3a;
+  font-size: 26px;
+}
+
+.demo-auth-description {
+  max-width: 500px;
+  margin: 0 0 22px;
+  color: #54645f;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.demo-auth-description code,
+.demo-auth-safety code {
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: #edf4ef;
+  color: #236b58;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+
+.demo-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.demo-auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #2a4641;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.demo-auth-form input,
+.demo-auth-form select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cbd8d1;
+  border-radius: 6px;
+  background: #fbfdfb;
+  padding: 10px 12px;
+  color: #243d38;
+  font-size: 14px;
+  outline: none;
+}
+
+.demo-auth-form input:focus,
+.demo-auth-form select:focus {
+  border-color: #38816d;
+  box-shadow: 0 0 0 3px rgb(56 129 109 / 14%);
+}
+
+.demo-auth-form input::placeholder {
+  color: #98a7a0;
+}
+
+.demo-auth-hint {
+  color: #73817c;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.demo-auth-submit {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  align-self: flex-start;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 6px;
+  background: #176a5d;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.demo-auth-submit:hover {
+  background: #10574d;
+}
+
+.demo-auth-submit span {
+  font-size: 19px;
+}
+
+.demo-auth-switch {
+  margin: 20px 0 0;
+  color: #687871;
+  font-size: 13px;
+}
+
+.demo-auth-switch a {
+  color: #176a5d;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.demo-auth-safety {
+  background: #eaf3ed;
+  box-shadow: none;
+}
+
+.demo-auth-safety .demo-card-icon {
+  margin-bottom: 18px;
+  border-radius: 50%;
+  background: #1e6a5c;
+  color: #fff;
+  font-weight: 700;
+}
+
+.demo-auth-safety h2 {
+  font-size: 22px;
+}
+
+.demo-auth-safety ul {
+  display: grid;
+  gap: 12px;
+  margin: 17px 0;
+  padding-left: 18px;
+  color: #345d51;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.demo-auth-safety > p:last-child {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid #d0e1d5;
+  color: #63786e;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.visa-demo-footer {
+  padding: 22px 0;
+  background: #173f39;
+  color: #d8e7de;
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .demo-portal-container,
+  .visa-demo-container {
+    width: min(100% - 32px, 1120px);
+  }
+
+  .demo-portal-header > div {
+    min-height: 68px;
+  }
+
+  .demo-badge,
+  .visa-demo-label {
+    max-width: 165px;
+    padding: 7px 10px;
+    font-size: 10px;
+    text-align: center;
+  }
+
+  .demo-portal-banner {
+    padding: 47px 0 50px;
+  }
+
+  .demo-portal-card {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 23px;
+  }
+
+  .visa-demo-header-inner {
+    min-height: 68px;
+  }
+
+  .visa-demo-account {
+    flex-wrap: wrap;
+    justify-content: end;
+    gap: 6px;
+  }
+
+  .visa-demo-account > span:first-child {
+    width: 100%;
+    text-align: right;
+    font-size: 11px;
+  }
+
+  .demo-auth-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .visa-demo-intro {
+    padding-top: 23px;
+  }
+
+  .visa-demo-disclaimer {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .visa-demo-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .visa-demo-side-panel {
+    display: grid;
+    grid-template-columns: 45px 1fr;
+    column-gap: 13px;
+    padding: 20px;
+  }
+
+  .visa-demo-side-mark {
+    grid-row: span 2;
+    margin: 0;
+  }
+
+  .visa-demo-side-panel .visa-demo-kicker {
+    align-self: end;
+  }
+
+  .visa-demo-side-panel h2,
+  .visa-demo-side-panel ul,
+  .visa-demo-side-panel > p:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .visa-demo-side-panel h2 {
+    margin-top: 16px;
+  }
+
+  .visa-demo-record-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .visa-demo-form-panel,
+  .visa-demo-records {
+    padding: 20px 17px;
+  }
+
+  .visa-demo-field-row,
+  .visa-demo-record dl {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-auth-card,
+  .demo-auth-safety {
+    padding: 22px;
+  }
+
+  .visa-demo-records-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .visa-demo-submit {
+    width: 100%;
+  }
+
+  .demo-auth-submit {
+    width: 100%;
+  }
 }

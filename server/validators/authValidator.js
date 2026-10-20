@@ -7,6 +7,7 @@ const sanitizeString = (str) => {
 };
 
 const validateRegistration = (data) => {
+  data = data && typeof data === 'object' && !Array.isArray(data) ? data : {};
   const errors = {};
   const displayName = sanitizeString(data.displayName);
   const email = sanitizeString(data.email);
@@ -43,6 +44,7 @@ const validateRegistration = (data) => {
 };
 
 const validateLogin = (data) => {
+  data = data && typeof data === 'object' && !Array.isArray(data) ? data : {};
   const errors = {};
   const email = sanitizeString(data.email);
   const password = typeof data.password === 'string' ? data.password : '';

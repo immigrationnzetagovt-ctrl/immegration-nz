@@ -23,10 +23,22 @@ const protect = async (req, res, next) => {
     });
   }
 
+  let decoded;
   try {
-    const secret = process.env.JWT_SECRET || 'visapath_super_secret_jwt_key_2026_educational';
-    const decoded = jwt.verify(token, secret);
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET is not configured.');
+    }
+    decoded = jwt.verify(token, secret);
+  } catch (error) {
+    console.error('[Auth Error] JWT verification failed:', error.message);
+    return res.status(401).json({
+      success: false,
+      message: 'Session has expired or is invalid. Please log in again.',
+    });
+  }
 
+  try {
     const user = await User.findById(decoded.id).select('-password');
     if (!user) {
       return res.status(401).json({
@@ -38,11 +50,7 @@ const protect = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error('[Auth Error] JWT verification failed:', error.message);
-    return res.status(401).json({
-      success: false,
-      message: 'Session has expired or is invalid. Please log in again.',
-    });
+    next(error);
   }
 };
 
@@ -63,18 +71,28 @@ const optionalProtect = async (req, res, next) => {
     return next();
   }
 
+  let decoded;
   try {
-    const secret = process.env.JWT_SECRET || 'visapath_super_secret_jwt_key_2026_educational';
-    const decoded = jwt.verify(token, secret);
-    const user = await User.findById(decoded.id).select('-password');
-    if (user) {
-      req.user = user;
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET is not configured.');
     }
-  } catch (err) {
-    // Ignore invalid token in optional protect
+    decoded = jwt.verify(token, secret);
+  } catch (error) {
+    if (error.name !== 'JsonWebTokenError' && error.name !== 'TokenExpiredError' &&
+      error.name !== 'NotBeforeError') {
+      return next(error);
+    }
+    return next();
+  }
+
+  try {
+    const user = await User.findById(decoded.id).select('-password');
+    if (user) req.user = user;
+  } catch (error) {
+    return next(error);
   }
   next();
 };
 
 module.exports = { protect, optionalProtect };
-

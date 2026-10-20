@@ -7,9 +7,25 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
+const mongoose = require('mongoose');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
+
+const validateProductionConfig = () => {
+  if (process.env.NODE_ENV !== 'production') return;
+
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret || jwtSecret.length < 32) {
+    throw new Error('JWT_SECRET must be configured with at least 32 characters in production.');
+  }
+  if (!process.env.MONGODB_URI) {
+    throw new Error('MONGODB_URI must be configured in production.');
+  }
+  if (!process.env.FRONTEND_URL) {
+    throw new Error('FRONTEND_URL must be configured in production.');
+  }
+};
 
 // Security headers with Helmet
 app.use(
@@ -19,26 +35,31 @@ app.use(
   })
 );
 
-// CORS configuration for local frontend
+const allowedOrigins = (process.env.FRONTEND_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+// Allow localhost origins only during development and tests.
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, or Postman)
       if (!origin) return callback(null, true);
-      // Allow any localhost / 127.0.0.1 port or explicit FRONTEND_URL
-      if (
+      const isLocalOrigin =
         /^http:\/\/localhost(:\d+)?$/.test(origin) ||
-        /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin) ||
-        origin === process.env.FRONTEND_URL ||
-        process.env.NODE_ENV === 'test'
-      ) {
+        /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin);
+      if (allowedOrigins.includes(origin) ||
+        (process.env.NODE_ENV !== 'production' && isLocalOrigin)) {
         return callback(null, true);
       }
-      return callback(new Error(`CORS origin not allowed: ${origin}`));
+      const error = new Error('CORS origin not allowed');
+      error.status = 403;
+      return callback(error);
     },
     credentials: true, // Allow cookies to be sent across origins
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Disposition'],
   })
 );
 
@@ -57,6 +78,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.get('/api/ready', (req, res) => {
+  const isDatabaseConnected = mongoose.connection.readyState === 1;
+  res.status(isDatabaseConnected ? 200 : 503).json({
+    status: isDatabaseConnected ? 'ready' : 'not_ready',
+    database: isDatabaseConnected ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Mount Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationRoutes);
@@ -68,17 +98,37 @@ app.use(errorHandler);
 // Connect to MongoDB and start server
 const startServer = async () => {
   try {
+    validateProductionConfig();
     await connectDB();
     if (process.env.NODE_ENV !== 'test') {
-      app.listen(PORT, () => {
+      const server = app.listen(PORT, () => {
         console.log(`[Server] VisaPath API running on http://localhost:${PORT}`);
         console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
         console.log(`[Notice] DEMO — NOT AN OFFICIAL IMMIGRATION SERVICE`);
       });
+
+      const shutdown = (signal) => {
+        console.log(`[Server] ${signal} received; shutting down gracefully.`);
+        server.close(async (error) => {
+          if (error) {
+            console.error('[Server Error] HTTP server shutdown failed:', error.message);
+            process.exitCode = 1;
+          }
+          try {
+            await mongoose.disconnect();
+          } catch (disconnectError) {
+            console.error('[Database Error] MongoDB shutdown failed:', disconnectError.message);
+            process.exitCode = 1;
+          }
+        });
+      };
+
+      process.once('SIGTERM', () => shutdown('SIGTERM'));
+      process.once('SIGINT', () => shutdown('SIGINT'));
     }
   } catch (err) {
-    console.error('[Server Error] Server failed to start due to database error:', err.message);
-    process.exit(1);
+    console.error('[Server Error] Startup failed:', err.message);
+    process.exitCode = 1;
   }
 };
 
