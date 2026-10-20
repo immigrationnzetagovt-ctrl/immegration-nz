@@ -19,6 +19,7 @@ router.post('/validate-step-one', authLimiter, validateStepOne);
 
 // Logout
 router.post('/logout', logout);
+router.get('/logout', logout);
 
 // Authenticated current user profile
 router.get('/me', protect, getCurrentUser);

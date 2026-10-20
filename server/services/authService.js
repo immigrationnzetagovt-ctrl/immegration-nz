@@ -37,12 +37,15 @@ const clearAuthCookie = (res) => {
   const isProduction = process.env.NODE_ENV === 'production';
   const secure = process.env.COOKIE_SECURE === 'true' || (isProduction && process.env.COOKIE_SECURE !== 'false');
 
-  res.clearCookie(COOKIE_NAME, {
+  const options = {
     httpOnly: true,
     secure: secure,
     sameSite: 'lax',
     path: '/',
-  });
+  };
+
+  res.clearCookie(COOKIE_NAME, options);
+  res.cookie(COOKIE_NAME, '', { ...options, expires: new Date(0), maxAge: 0 });
 };
 
 module.exports = {

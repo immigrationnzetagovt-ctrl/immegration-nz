@@ -7,6 +7,10 @@ import visitImage from '../assets/visit-landscape.jpg';
 import workImage from '../assets/work-workers.jpg';
 import { FooterPattern, KoruArtwork } from '../components/DecorativeArtwork.jsx';
 
+import ministeryLogo from "../assets/footer_ministry_logo.svg";
+import sheilfLogo from "../assets/footer_sheild_logo.png";
+
+
 const announcements = [
   {
     id: 'rse-accommodation',
@@ -48,7 +52,28 @@ const announcements = [
     tags: ['Announcement', 'Join or bring family'],
   },
 ];
-
+function FooterKoruPattern() {
+  return (
+    <svg
+      className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.07] stroke-white fill-none"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1200 400"
+      preserveAspectRatio="none"
+    >
+      <path
+        d="M -100 350 C 150 350 250 200 400 200 C 550 200 650 350 900 350 C 1150 350 1250 100 1400 100"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M -100 280 C 200 280 300 100 500 100 C 700 100 800 300 1050 300 C 1200 300 1300 50 1450 50"
+        strokeWidth="1.5"
+      />
+      <circle cx="400" cy="200" r="40" strokeWidth="1" />
+      <circle cx="500" cy="100" r="60" strokeWidth="1" />
+      <circle cx="900" cy="350" r="80" strokeWidth="1" />
+    </svg>
+  );
+}
 const topVisas = [
   {
     title: 'Visitor Visa',
@@ -451,62 +476,156 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <footer className="relative overflow-hidden min-h-[475px] py-14 lg:py-[68px] pb-[26px] bg-[#323849] text-white">
-        <FooterPattern className="absolute inset-0 w-full h-full pointer-events-none opacity-55 text-[#2c3343]" />
-        <div className="w-[min(100%-100px,1400px)] mx-auto grid grid-cols-1 lg:grid-cols-[minmax(300px,1.65fr)_1fr] gap-10 lg:gap-[56px] relative z-10">
-          <div className="space-y-5">
-            <h2 className="m-0 text-[32px] lg:text-[36px] font-bold leading-tight">Visa lookup</h2>
-            <input
-              aria-label="Visa lookup"
-              placeholder="Visa lookup"
-              className="w-full max-w-[429px] h-[38px] px-2.5 border border-[#aeb3c0] bg-transparent text-white placeholder-[#d8dbe2] text-[14px] outline-none"
-            />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:gap-10">
-            <div className="space-y-3">
-              <h3 className="m-0 mb-3 text-[13px] font-bold">Find and compare visas</h3>
-              <Link to="/visit" className="block w-fit mb-2 text-[12px] hover:underline">Visit</Link>
-              <Link to="/work" className="block w-fit mb-2 text-[12px] hover:underline">Work</Link>
-              <Link to="/study" className="block w-fit mb-2 text-[12px] hover:underline">Study</Link>
-              <Link to="/live" className="block w-fit mb-2 text-[12px] hover:underline">Live</Link>
-              <Link to="/visas" className="block w-fit mb-2 text-[12px] hover:underline">All visas</Link>
-            </div>
-            <div className="space-y-3">
-              <h3 className="m-0 mb-3 text-[13px] font-bold">Popular information</h3>
-              <Link to="/contact" className="block w-fit mb-2 text-[12px] hover:underline">Contact us</Link>
-              <Link to="/residents" className="block w-fit mb-2 text-[12px] hover:underline">Residents</Link>
-              <Link to="/apply" className="block w-fit mb-2 text-[12px] hover:underline">Checking your visa application</Link>
-              <Link to="/apply" className="block w-fit mb-2 text-[12px] hover:underline">Applying for a visa</Link>
-              <Link to="/documents" className="block w-fit mb-2 text-[12px] hover:underline">Documents and proof</Link>
+       <footer className="bg-[#2d3342] text-white font-[Arial,sans-serif] py-12 px-6 lg:px-12">
+      <div className="max-w-[1400px] mx-auto">
+        {/* Top Content Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-[1.8fr_1fr_1fr] gap-12 pb-14">
+          {/* Left Column: Visa Lookup */}
+          <div className="space-y-4">
+            <h2 className="text-[38px] font-bold tracking-tight text-white leading-none">
+              Visa lookup
+            </h2>
+            <div className="max-w-[420px]">
+              <input
+                type="text"
+                aria-label="Visa lookup"
+                placeholder="Visa lookup"
+                className="w-full h-[40px] px-3 bg-transparent border border-[#52596b] text-white placeholder-white text-[17px] font-medium outline-none focus:border-white transition-colors rounded-none"
+              />
             </div>
           </div>
-          <div className="col-span-full grid gap-0 mt-6 text-[11px]">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between min-h-[100px] pb-4.5 border-b border-white/35 text-[12px] font-bold gap-4">
-              <span>
-                Ministry of Business,
-                <br />
-                Innovation &amp; Employment
-              </span>
-              <span>
+
+          {/* Middle Column: Find and compare visas */}
+          <div>
+            <h3 className="text-[16px] font-bold text-white mb-4">
+              Find and compare visas
+            </h3>
+            <ul className="space-y-3 text-[15px] m-0 p-0 list-none">
+              <li>
+                <Link to="/visit" className="text-white hover:underline underline-offset-4">
+                  Visit
+                </Link>
+              </li>
+              <li>
+                <Link to="/work" className="text-white hover:underline underline-offset-4">
+                  Work
+                </Link>
+              </li>
+              <li>
+                <Link to="/study" className="text-white hover:underline underline-offset-4">
+                  Study
+                </Link>
+              </li>
+              <li>
+                <Link to="/live" className="text-white hover:underline underline-offset-4">
+                  Live
+                </Link>
+              </li>
+              <li>
+                <Link to="/visas" className="text-white hover:underline underline-offset-4">
+                  All visas
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Right Column: Popular information */}
+          <div>
+            <h3 className="text-[16px] font-bold text-white mb-4">
+              Popular information
+            </h3>
+            <ul className="space-y-3 text-[15px] m-0 p-0 list-none">
+              <li>
+                <Link to="/contact" className="text-white hover:underline underline-offset-4">
+                  Contact us
+                </Link>
+              </li>
+              <li>
+                <Link to="/residents" className="text-white hover:underline underline-offset-4">
+                  Residence
+                </Link>
+              </li>
+              <li>
+                <Link to="/apply" className="text-white hover:underline underline-offset-4">
+                  Checking your application
+                </Link>
+              </li>
+              <li>
+                <Link to="/apply" className="text-white hover:underline underline-offset-4">
+                  Applying for a visa
+                </Link>
+              </li>
+              <li>
+                <Link to="/documents" className="text-white hover:underline underline-offset-4">
+                  Documents and proof
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Divider Line */}
+        <div className="border-t border-[#3f4657] pt-8" />
+
+        {/* Bottom Section: Logos & Legal */}
+        <div className="space-y-6">
+          {/* Logos Row */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            {/* Ministry & Shield Logos */}
+            <div className="flex items-center gap-6">
+              <img
+                src={ministeryLogo}
+                alt="Ministry of Business, Innovation & Employment"
+                className="h-[42px] w-auto object-contain brightness-0 invert"
+              />
+              <img
+                src={sheilfLogo}
+                alt="New Zealand Shield Seal"
+                className="h-[42px] w-auto object-contain"
+              />
+            </div>
+
+            {/* Right Side: New Zealand Government */}
+            <div className="text-left sm:text-right">
+              <div className="text-[17px] font-bold text-white tracking-tight">
                 New Zealand Government
-                <br />
+              </div>
+              <div className="text-[13px] font-normal text-slate-300">
                 Te Kāwanatanga o Aotearoa
-              </span>
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-5 text-[11px]">
-              <nav aria-label="Footer links" className="flex flex-wrap gap-4">
-                <Link to="/about" className="hover:underline">Glossary</Link>
-                <Link to="/accessibility" className="hover:underline">Accessibility</Link>
-                <Link to="/privacy" className="hover:underline">Privacy</Link>
-                <Link to="/terms" className="hover:underline">Terms of use</Link>
-                <Link to="/copyright" className="hover:underline">Copyright</Link>
-                <Link to="/cookies" className="hover:underline">Cookie preferences</Link>
-              </nav>
-              <small className="whitespace-nowrap">Crown copyright © 2026</small>
+          </div>
+
+          {/* Navigation Links & Crown Copyright */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 text-[13px]">
+            <nav aria-label="Footer links" className="flex flex-wrap gap-x-6 gap-y-2">
+              <Link to="/glossary" className="text-white underline underline-offset-4 hover:text-slate-300">
+                Glossary
+              </Link>
+              <Link to="/accessibility" className="text-white underline underline-offset-4 hover:text-slate-300">
+                Accessibility
+              </Link>
+              <Link to="/privacy" className="text-white underline underline-offset-4 hover:text-slate-300">
+                Privacy
+              </Link>
+              <Link to="/terms" className="text-white underline underline-offset-4 hover:text-slate-300">
+                Terms of use
+              </Link>
+              <Link to="/copyright" className="text-white underline underline-offset-4 hover:text-slate-300">
+                Copyright
+              </Link>
+              <Link to="/cookies" className="text-white underline underline-offset-4 hover:text-slate-300">
+                Cookie preferences
+              </Link>
+            </nav>
+
+            <div className="text-[13px] text-slate-300 whitespace-nowrap">
+              Crown copyright © 2026
             </div>
           </div>
         </div>
-      </footer>
+      </div>
+    </footer>
     </div>
   );
 }

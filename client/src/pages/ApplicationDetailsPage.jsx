@@ -129,6 +129,13 @@ export default function ApplicationDetailsPage() {
             className="h-[52px] object-contain brightness-0 invert" 
           />
         </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="text-white/80 hover:text-white text-xs hover:underline cursor-pointer bg-transparent border-0"
+        >
+          Log out
+        </button>
       </header>
 
       {/* Breadcrumb Bar */}
@@ -174,8 +181,16 @@ export default function ApplicationDetailsPage() {
               <span className="text-[#333333]">Acting for:</span>{' '}
               <span className="font-bold text-[#222222]">Visa Verification Service</span>
             </div>
-            <div className="text-[#333333]">
-              Logged in: <span className="font-semibold">{user?.email}</span>
+            <div className="text-[#333333] flex items-center gap-1.5">
+              <span>Logged in: <span className="font-semibold">{user?.email}</span></span>
+              <span className="text-[#888888]">|</span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="text-[#003399] hover:underline cursor-pointer bg-transparent border-0 p-0 text-[13px] font-normal"
+              >
+                Log out
+              </button>
             </div>
           </div>
 
