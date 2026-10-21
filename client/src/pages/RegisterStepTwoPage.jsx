@@ -2,23 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { applicationService } from '../services/applicationService';
-import {
-  FileText,
-  User,
-  Globe2,
-  Calendar,
-  CreditCard,
-  Plane,
-  AlertCircle,
-  Loader2,
-  ArrowRight,
-  ShieldAlert,
-  Info,
-  Check,
-} from 'lucide-react';
+import logo from '../assets/immegration.png';
+import { Loader2, AlertCircle, Home } from 'lucide-react';
 
 export default function RegisterStepTwoPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,17 +27,19 @@ export default function RegisterStepTwoPage() {
   const hasToken = Boolean(localStorage.getItem('visapath_token'));
   const isAuth = Boolean(user || hasToken);
 
-  // Form State with required defaults
+  // Form State containing ALL previous input fields and defaults
   const [formData, setFormData] = useState({
     displayName: stepOneData.displayName || user?.displayName || '',
-    nationality: 'New Zealand', // Default specified
-    dateOfBirth: '1994-06-15',
-    gender: 'Male', // Default specified
-    passportNumber: 'NZ9482710', // Fictional sample default
-    visaType: 'Visitor', // Default specified
-    travelStartDate: '2026-11-15',
-    travelEndDate: '2026-12-05',
-    entryType: 'Multiple entry', // Default specified
+    nationality: 'New Zealand',
+    dateOfBirth: '1993-11-02',
+    gender: 'Male',
+    passportNumber: 'V6416018',
+    documentNumber: 'NZ9482710',
+    visaType: 'Visitor',
+    travelStartDate: '2026-03-27',
+    travelEndDate: '2026-04-27',
+    entryType: 'Single entry',
+    consented: true,
     conditions:
       'Educational simulation only. No official status granted. Valid for demo demonstration purposes.',
   });
@@ -69,7 +59,7 @@ export default function RegisterStepTwoPage() {
     const errors = {};
 
     if (!formData.displayName.trim() || formData.displayName.trim().length < 2) {
-      errors.displayName = 'Applicant name is required (min 2 characters)';
+      errors.displayName = 'Family Name is required (min 2 characters)';
     }
 
     if (!formData.nationality.trim()) {
@@ -77,25 +67,23 @@ export default function RegisterStepTwoPage() {
     }
 
     if (!formData.dateOfBirth) {
-      errors.dateOfBirth = 'Date of birth is required';
-    } else {
-      const dob = new Date(formData.dateOfBirth);
-      if (dob > new Date()) {
-        errors.dateOfBirth = 'Date of birth cannot be in the future';
-      }
+      errors.dateOfBirth = 'Date of Birth is required';
     }
 
     if (!formData.passportNumber.trim()) {
-      errors.passportNumber = 'Fictional passport number is required';
-    } else if (!/^[A-Za-z0-9\- ]{5,25}$/.test(formData.passportNumber.trim())) {
-      errors.passportNumber = 'Passport number must be 5-25 alphanumeric characters';
+      errors.passportNumber = 'Passport Number is required';
+    }
+
+    if (!formData.documentNumber.trim()) {
+      errors.documentNumber = 'Document Number is required';
     }
 
     if (!formData.travelStartDate) {
-      errors.travelStartDate = 'Travel start date is required';
+      errors.travelStartDate = 'Visa Start Date is required';
     }
+
     if (!formData.travelEndDate) {
-      errors.travelEndDate = 'Travel end date is required';
+      errors.travelEndDate = 'Travel End Date is required';
     }
 
     if (formData.travelStartDate && formData.travelEndDate) {
@@ -106,13 +94,20 @@ export default function RegisterStepTwoPage() {
       }
     }
 
+    if (!formData.consented) {
+      errors.consented = 'You must confirm that the visa holder has consented to this check.';
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
     if (formErrors[name]) {
       setFormErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -142,10 +137,8 @@ export default function RegisterStepTwoPage() {
     setServerError('');
 
     try {
-      // Build submission payload
       const payload = {
         ...formData,
-        // Include account creation details if user is not already logged in
         ...(hasInlineAccount
           ? {
               account: {
@@ -178,436 +171,384 @@ export default function RegisterStepTwoPage() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      // ignore
+    }
+    navigate('/login');
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      {/* Wizard Progress */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
-          <Link
-            to="/register"
-            className="text-emerald-700 font-extrabold flex items-center gap-1.5 hover:underline"
-          >
-            <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px]">
-              ✓
-            </span>
-            Account Step 1 Completed
-          </Link>
-          <span className="text-blue-600 font-extrabold flex items-center gap-1.5">
-            <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[11px]">
-              2
-            </span>
-            Application Details
-          </span>
+    <div className="min-h-screen bg-white text-[#222222] font-[Arial,sans-serif] text-[13px] leading-normal flex flex-col antialiased select-none">
+      {/* Top Header Bar matching VisaView */}
+      <header className="bg-[#005aa9] h-[86px] px-[72px] flex items-center justify-between">
+        <div className="flex items-center">
+          <img
+            src={logo}
+            alt="Immigration New Zealand"
+            className="h-[52px] object-contain brightness-0 invert"
+          />
         </div>
-        <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-          <div className="bg-blue-600 h-full w-full transition-all duration-300 rounded-full" />
+        <div className="text-white text-[12px] flex items-center gap-2">
+          <span>Logged in:</span>
+          <span className="font-semibold">{user?.email || stepOneData.email || 'User'}</span>
+          <span>|</span>
+          <button onClick={handleLogout} className="underline hover:text-slate-200">
+            Log out
+          </button>
         </div>
+      </header>
+
+      {/* Breadcrumb Bar */}
+      <div className="bg-[#dbe6f1] h-[34px] px-[72px] text-[13px] text-[#003399] flex items-center gap-1.5 border-b border-[#c2d3e4]">
+        <Link to="/" className="flex items-center gap-1 hover:underline text-[#003399]">
+          <Home className="w-3.5 h-3.5 text-[#222222]" />
+          <span>Home</span>
+        </Link>
+        <span className="text-[#333333]">&gt;</span>
+        <span className="hover:underline cursor-pointer">VisaView</span>
+        <span className="text-[#333333]">&gt;</span>
+        <span className="text-[#222222] font-bold">Visa Verification Enquiry</span>
       </div>
 
-      {/* Header */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-2">
-        <div className="flex items-center gap-2 text-xs font-bold text-amber-700 uppercase tracking-wider">
-          <ShieldAlert className="w-4 h-4 text-amber-600" />
-          <span>Fictional Demonstration • Not an Official Immigration Document</span>
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Application Details (Step 2 of 2)
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-500">
-          Enter your simulated personal and travel parameters. Default educational values are pre-selected.
-        </p>
-      </div>
+      {/* Main Container */}
+      <div className="flex flex-1 pl-[72px]">
+        {/* Left Navigation Sidebar */}
+        <aside className="w-[215px] bg-[#eef4f9] border-r border-[#cad8e6] pt-6 pr-4 pl-0 shrink-0 min-h-[calc(100vh-120px)]">
+          <h2 className="text-[17px] font-bold text-[#003399] mb-3 pl-4">VisaView</h2>
+          <ul className="space-y-2 text-[13px] text-[#003399]">
+            <li className="flex items-start gap-1.5 cursor-pointer hover:underline pl-4">
+              <span className="text-[9px] mt-[3px] text-[#003399]">►</span>
+              <span>Register Organisation</span>
+            </li>
+            <li className="flex items-start gap-1.5 cursor-pointer hover:underline pl-4">
+              <span className="text-[9px] mt-[3px] text-[#003399]">►</span>
+              <span>Verify Visa Record</span>
+            </li>
+            <li className="flex items-start gap-1.5 font-bold cursor-pointer hover:underline pl-4">
+              <span className="text-[9px] mt-[3px] text-[#003399]">►</span>
+              <span>My Visa Verification Service Account</span>
+            </li>
+          </ul>
+        </aside>
 
-      {/* Step 1 Required Warning if user is not authenticated and has no cached Step 1 info */}
-      {!isAuth && !stepOneData.email && (
-        <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fadeIn">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+        {/* Right Content Form Area */}
+        <main className="flex-1 pt-6 pl-9 pr-12 max-w-[950px] pb-16">
+          {/* Top Info Header Bar */}
+          <div className="flex justify-between items-baseline text-[13px] mb-6 border-b border-slate-200 pb-3">
             <div>
-              <strong className="font-bold">Step 1 Account Registration Required:</strong>
-              <p className="mt-0.5 text-amber-800">
-                You are not currently logged in. To submit this application, please complete Step 1 to create your account or log in with your existing account.
-              </p>
+              <span className="text-[#333333]">Acting for:</span>{' '}
+              <span className="font-bold text-[#222222]">Visa Verification Service</span>
             </div>
+            {!isAuth && (
+              <div className="text-xs text-amber-700 font-semibold">
+                Note: Creating demo record for new account.
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <Link
-              to="/register"
-              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow-xs"
-            >
-              Go to Step 1
-            </Link>
-            <Link
-              to="/login"
-              className="px-4 py-2 bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 rounded-xl font-bold text-xs"
-            >
-              Log In
-            </Link>
-          </div>
-        </div>
-      )}
 
-      {/* Server Error Banner */}
-      {serverError && (
-        <div
-          role="alert"
-          className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-start gap-2.5 animate-fadeIn"
-        >
-          <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-          <div>
-            <strong className="font-semibold">Submission Error:</strong> {serverError}
+          {/* Title and Instructions */}
+          <div className="space-y-1 mb-6">
+            <h1 className="text-[28px] font-normal text-[#003399] tracking-tight leading-none mb-3">
+              Visa Verification Enquiry
+            </h1>
+            <p className="text-[13px] text-[#222222]">
+              Enter the details of the visa to be verified.
+            </p>
+            <p className="text-[13px] text-[#222222]">
+              Please enter these details exactly as they appear in the visa holder's passport.
+            </p>
           </div>
-        </div>
-      )}
 
-      <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-        {/* Section 1: Personal Information */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <User className="w-5 h-5 text-blue-600" />
-                1. Personal Information
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Primary identity declarations for the demo application
-              </p>
+          {/* Error Banner */}
+          {serverError && (
+            <div role="alert" className="p-3 mb-4 bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between rounded-xs">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{serverError}</span>
+              </div>
+              <button onClick={() => setServerError('')} className="underline font-bold">
+                Dismiss
+              </button>
             </div>
-            <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-full">
-              Simulated Identity
-            </span>
-          </div>
+          )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {/* Display Name */}
-            <div>
-              <label
-                htmlFor="displayName"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-              >
-                Applicant Full Name *
+          {/* Form matching official VisaView portal layout with all parameters */}
+          <form onSubmit={handleSubmit} className="space-y-4 max-w-[650px]" noValidate>
+            {/* Family Name */}
+            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+              <label htmlFor="displayName" className="text-[13px] text-[#222222]">
+                Family Name *
               </label>
-              <input
-                id="displayName"
-                name="displayName"
-                type="text"
-                value={formData.displayName}
-                onChange={handleChange}
-                placeholder="e.g. Johnathan Smith"
-                className={`block w-full px-3.5 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.displayName
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } placeholder-slate-400 focus:outline-none focus:ring-2`}
-              />
-              {formErrors.displayName && (
-                <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.displayName}</p>
-              )}
+              <div>
+                <input
+                  id="displayName"
+                  name="displayName"
+                  type="text"
+                  value={formData.displayName}
+                  onChange={handleChange}
+                  placeholder="GAGANDEEP SINGH"
+                  className={`w-full h-[32px] px-2.5 bg-white border ${
+                    formErrors.displayName ? 'border-red-500' : 'border-[#7f9db9]'
+                  } text-[13px] text-[#222222] outline-none rounded-[2px] focus:border-[#003399]`}
+                />
+                {formErrors.displayName && (
+                  <span className="text-[11px] text-red-600 mt-0.5 block">{formErrors.displayName}</span>
+                )}
+              </div>
             </div>
 
-            {/* Nationality */}
-            <div>
-              <label
-                htmlFor="nationality"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-              >
-                Declared Nationality *
+            {/* Passport Number */}
+            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+              <label htmlFor="passportNumber" className="text-[13px] text-[#222222]">
+                Passport Number *
               </label>
-              <select
-                id="nationality"
-                name="nationality"
-                value={formData.nationality}
-                onChange={handleChange}
-                className="block w-full px-3.5 py-2.5 sm:text-sm rounded-xl bg-white border border-slate-300 focus:ring-blue-600 focus:border-blue-600 focus:outline-none focus:ring-2"
-              >
-                <option value="New Zealand">New Zealand (Default Demo)</option>
-                <option value="Australia">Australia</option>
-                <option value="Canada">Canada</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="United States">United States</option>
-                <option value="Singapore">Singapore</option>
-                <option value="Japan">Japan</option>
-                <option value="Germany">Germany</option>
-              </select>
-              {formErrors.nationality && (
-                <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.nationality}</p>
-              )}
+              <div>
+                <input
+                  id="passportNumber"
+                  name="passportNumber"
+                  type="text"
+                  value={formData.passportNumber}
+                  onChange={handleChange}
+                  className={`w-full h-[32px] px-2.5 bg-white border ${
+                    formErrors.passportNumber ? 'border-red-500' : 'border-[#7f9db9]'
+                  } text-[13px] text-[#222222] outline-none rounded-[2px] uppercase`}
+                />
+                {formErrors.passportNumber && (
+                  <span className="text-[11px] text-red-600 mt-0.5 block">{formErrors.passportNumber}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Document Number */}
+            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+              <label htmlFor="documentNumber" className="text-[13px] text-[#222222]">
+                Document Number *
+              </label>
+              <div>
+                <input
+                  id="documentNumber"
+                  name="documentNumber"
+                  type="text"
+                  value={formData.documentNumber}
+                  onChange={handleChange}
+                  className={`w-full h-[32px] px-2.5 bg-white border ${
+                    formErrors.documentNumber ? 'border-red-500' : 'border-[#7f9db9]'
+                  } text-[13px] text-[#222222] outline-none rounded-[2px]`}
+                />
+                {formErrors.documentNumber && (
+                  <span className="text-[11px] text-red-600 mt-0.5 block">{formErrors.documentNumber}</span>
+                )}
+              </div>
             </div>
 
             {/* Date of Birth */}
-            <div>
-              <label
-                htmlFor="dateOfBirth"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-              >
+            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+              <label htmlFor="dateOfBirth" className="text-[13px] text-[#222222]">
                 Date of Birth *
               </label>
-              <input
-                id="dateOfBirth"
-                name="dateOfBirth"
-                type="date"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                max={new Date().toISOString().split('T')[0]}
-                className={`block w-full px-3.5 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.dateOfBirth
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } focus:outline-none focus:ring-2`}
-              />
-              {formErrors.dateOfBirth && (
-                <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.dateOfBirth}</p>
-              )}
+              <div>
+                <input
+                  id="dateOfBirth"
+                  name="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  className={`w-full h-[32px] px-2.5 bg-white border ${
+                    formErrors.dateOfBirth ? 'border-red-500' : 'border-[#7f9db9]'
+                  } text-[13px] text-[#222222] outline-none rounded-[2px]`}
+                />
+                {formErrors.dateOfBirth && (
+                  <span className="text-[11px] text-red-600 mt-0.5 block">{formErrors.dateOfBirth}</span>
+                )}
+              </div>
             </div>
 
             {/* Gender */}
-            <div>
-              <label
-                htmlFor="gender"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-              >
+            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+              <label htmlFor="gender" className="text-[13px] text-[#222222]">
                 Gender *
               </label>
-              <select
-                id="gender"
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                className="block w-full px-3.5 py-2.5 sm:text-sm rounded-xl bg-white border border-slate-300 focus:ring-blue-600 focus:border-blue-600 focus:outline-none focus:ring-2"
-              >
-                <option value="Male">Male (Default)</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-                <option value="Undisclosed">Undisclosed</option>
-              </select>
-              {formErrors.gender && (
-                <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.gender}</p>
-              )}
+              <div>
+                <select
+                  id="gender"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="w-full h-[32px] px-2 bg-white border border-[#7f9db9] text-[13px] text-[#222222] outline-none rounded-[2px]"
+                >
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Section 2: Travel & Sample Application Information */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <Plane className="w-5 h-5 text-blue-600" />
-                2. Travel & Sample Application Information
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Simulated travel dates, passport reference, and visa category
-              </p>
-            </div>
-            <span className="text-[11px] font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-1 rounded-full">
-              Travel Simulation
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {/* Fictional Passport Number */}
-            <div>
-              <label
-                htmlFor="passportNumber"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-              >
-                Fictional Passport Number *
+            {/* Nationality */}
+            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+              <label htmlFor="nationality" className="text-[13px] text-[#222222]">
+                Passport Nationality *
               </label>
-              <input
-                id="passportNumber"
-                name="passportNumber"
-                type="text"
-                value={formData.passportNumber}
-                onChange={handleChange}
-                placeholder="e.g. NZ9482710"
-                className={`block w-full px-3.5 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.passportNumber
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } placeholder-slate-400 focus:outline-none focus:ring-2 uppercase`}
-              />
-              <p className="mt-1 text-[11px] text-slate-400">
-                Notice: For educational safety, use fictional sample data only.
-              </p>
-              {formErrors.passportNumber && (
-                <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.passportNumber}</p>
-              )}
+              <div>
+                <select
+                  id="nationality"
+                  name="nationality"
+                  value={formData.nationality}
+                  onChange={handleChange}
+                  className="w-full h-[32px] px-2 bg-white border border-[#7f9db9] text-[13px] text-[#222222] outline-none rounded-[2px]"
+                >
+                  <option value="New Zealand">New Zealand</option>
+                  <option value="India">India</option>
+                  <option value="Australia">Australia</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="United States">United States</option>
+                  <option value="Canada">Canada</option>
+                </select>
+              </div>
             </div>
 
-            {/* Visa Type */}
-            <div>
-              <label
-                htmlFor="visaType"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-              >
+            {/* Visa Category / Type */}
+            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+              <label htmlFor="visaType" className="text-[13px] text-[#222222]">
                 Visa Category *
               </label>
-              <select
-                id="visaType"
-                name="visaType"
-                value={formData.visaType}
-                onChange={handleChange}
-                className="block w-full px-3.5 py-2.5 sm:text-sm rounded-xl bg-white border border-slate-300 focus:ring-blue-600 focus:border-blue-600 focus:outline-none focus:ring-2"
-              >
-                <option value="Visitor">Visitor (Default)</option>
-                <option value="Student">Student</option>
-                <option value="Work">Work</option>
-                <option value="Transit">Transit</option>
-                <option value="Business">Business</option>
-              </select>
-              {formErrors.visaType && (
-                <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.visaType}</p>
-              )}
+              <div>
+                <select
+                  id="visaType"
+                  name="visaType"
+                  value={formData.visaType}
+                  onChange={handleChange}
+                  className="w-full h-[32px] px-2 bg-white border border-[#7f9db9] text-[13px] text-[#222222] outline-none rounded-[2px]"
+                >
+                  <option value="Visitor">Visitor</option>
+                  <option value="Student">Student</option>
+                  <option value="Work">Work</option>
+                  <option value="Business">Business</option>
+                  <option value="Transit">Transit</option>
+                </select>
+              </div>
             </div>
 
-            {/* Travel Start Date */}
-            <div>
-              <label
-                htmlFor="travelStartDate"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-              >
-                Travel Start Date *
+            {/* Visa Start Date */}
+            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+              <label htmlFor="travelStartDate" className="text-[13px] text-[#222222]">
+                Visa Start Date (dd/mm/yyyy) *
               </label>
-              <input
-                id="travelStartDate"
-                name="travelStartDate"
-                type="date"
-                value={formData.travelStartDate}
-                onChange={handleChange}
-                className={`block w-full px-3.5 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.travelStartDate
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } focus:outline-none focus:ring-2`}
-              />
-              {formErrors.travelStartDate && (
-                <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.travelStartDate}</p>
-              )}
+              <div>
+                <input
+                  id="travelStartDate"
+                  name="travelStartDate"
+                  type="date"
+                  value={formData.travelStartDate}
+                  onChange={handleChange}
+                  className={`w-full h-[32px] px-2.5 bg-white border ${
+                    formErrors.travelStartDate ? 'border-red-500' : 'border-[#7f9db9]'
+                  } text-[13px] text-[#222222] outline-none rounded-[2px]`}
+                />
+                {formErrors.travelStartDate && (
+                  <span className="text-[11px] text-red-600 mt-0.5 block">{formErrors.travelStartDate}</span>
+                )}
+              </div>
             </div>
 
-            {/* Travel End Date */}
-            <div>
-              <label
-                htmlFor="travelEndDate"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-              >
-                Travel End Date *
+            {/* Visa End Date */}
+            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+              <label htmlFor="travelEndDate" className="text-[13px] text-[#222222]">
+                Visa Expiry Date *
               </label>
-              <input
-                id="travelEndDate"
-                name="travelEndDate"
-                type="date"
-                value={formData.travelEndDate}
-                onChange={handleChange}
-                min={formData.travelStartDate}
-                className={`block w-full px-3.5 py-2.5 sm:text-sm rounded-xl bg-white border ${
-                  formErrors.travelEndDate
-                    ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:ring-blue-600 focus:border-blue-600'
-                } focus:outline-none focus:ring-2`}
-              />
-              {formErrors.travelEndDate && (
-                <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.travelEndDate}</p>
-              )}
+              <div>
+                <input
+                  id="travelEndDate"
+                  name="travelEndDate"
+                  type="date"
+                  value={formData.travelEndDate}
+                  onChange={handleChange}
+                  className={`w-full h-[32px] px-2.5 bg-white border ${
+                    formErrors.travelEndDate ? 'border-red-500' : 'border-[#7f9db9]'
+                  } text-[13px] text-[#222222] outline-none rounded-[2px]`}
+                />
+                {formErrors.travelEndDate && (
+                  <span className="text-[11px] text-red-600 mt-0.5 block">{formErrors.travelEndDate}</span>
+                )}
+              </div>
             </div>
 
             {/* Entry Type */}
-            <div className="sm:col-span-2">
-              <label
-                htmlFor="entryType"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
-              >
-                Entry Type *
+            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+              <label htmlFor="entryType" className="text-[13px] text-[#222222]">
+                Number of Entries *
               </label>
-              <select
-                id="entryType"
-                name="entryType"
-                value={formData.entryType}
-                onChange={handleChange}
-                className="block w-full px-3.5 py-2.5 sm:text-sm rounded-xl bg-white border border-slate-300 focus:ring-blue-600 focus:border-blue-600 focus:outline-none focus:ring-2"
-              >
-                <option value="Multiple entry">Multiple entry (Default)</option>
-                <option value="Single entry">Single entry</option>
-              </select>
-              {formErrors.entryType && (
-                <p className="mt-1 text-xs text-red-600 font-medium">{formErrors.entryType}</p>
+              <div>
+                <select
+                  id="entryType"
+                  name="entryType"
+                  value={formData.entryType}
+                  onChange={handleChange}
+                  className="w-full h-[32px] px-2 bg-white border border-[#7f9db9] text-[13px] text-[#222222] outline-none rounded-[2px]"
+                >
+                  <option value="Single entry">Single entry</option>
+                  <option value="Multiple entry">Multiple entry</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Conditions / Notes */}
+            <div className="grid grid-cols-[180px_1fr] items-start gap-4 pt-1">
+              <label htmlFor="conditions" className="text-[13px] text-[#222222] pt-1">
+                Visa Conditions
+              </label>
+              <div>
+                <textarea
+                  id="conditions"
+                  name="conditions"
+                  rows={3}
+                  value={formData.conditions}
+                  onChange={handleChange}
+                  className="w-full p-2 bg-white border border-[#7f9db9] text-[13px] text-[#222222] outline-none rounded-[2px]"
+                />
+              </div>
+            </div>
+
+            {/* Checkbox Consent */}
+            <div className="pt-2 pl-[180px]">
+              <label className="flex items-start gap-2.5 cursor-pointer text-[13px] text-[#222222]">
+                <input
+                  type="checkbox"
+                  name="consented"
+                  checked={formData.consented}
+                  onChange={handleChange}
+                  className="mt-0.5 rounded-[2px] border-[#7f9db9] text-[#005ba9] focus:ring-0 w-4 h-4"
+                />
+                <span>The visa holder has consented to this check.</span>
+              </label>
+              {formErrors.consented && (
+                <span className="text-[11px] text-red-600 mt-1 block">{formErrors.consented}</span>
               )}
             </div>
 
-            {/* Conditions */}
-            <div className="sm:col-span-2">
-              <label
-                htmlFor="conditions"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
+            {/* Submit Button matching reference style */}
+            <div className="pt-4 pl-[180px]">
+              <button
+                type="submit"
+                disabled={loading}
+                id="check-visa-btn"
+                className="px-5 py-2 bg-[#005ba4] hover:bg-[#004a87] text-white text-[13px] font-bold rounded-[2px] transition-colors disabled:opacity-50 flex items-center gap-2 shadow-xs cursor-pointer"
               >
-                Conditions & Notes
-              </label>
-              <textarea
-                id="conditions"
-                name="conditions"
-                rows={3}
-                value={formData.conditions}
-                onChange={handleChange}
-                className="block w-full px-3.5 py-2.5 sm:text-sm rounded-xl bg-white border border-slate-300 focus:ring-blue-600 focus:border-blue-600 focus:outline-none focus:ring-2 placeholder-slate-400"
-              />
-              <p className="mt-1 text-[11px] text-slate-400">
-                Simulated conditions to be printed onto the generated PDF document.
-              </p>
+                {loading ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Verifying Record...</span>
+                  </>
+                ) : (
+                  <span>Check Visa</span>
+                )}
+              </button>
             </div>
-          </div>
-        </div>
-
-        {/* Server Policy Notice */}
-        <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200 text-xs text-slate-600 flex items-start gap-3">
-          <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-          <div>
-            <strong className="text-slate-800">Server Verification Policy:</strong> The server will
-            generate a unique tracking reference (e.g. <code>VP-2026-XXXXXX</code>) and enforce an initial
-            status of <strong>Pending</strong>. Client-supplied reference numbers or statuses are ignored.
-          </div>
-        </div>
-
-        {/* Bottom Error Alert if serverError is present */}
-        {serverError && (
-          <div
-            role="alert"
-            className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-start gap-2.5 animate-fadeIn"
-          >
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-            <div>
-              <strong className="font-semibold">Submission Error:</strong> {serverError}
-            </div>
-          </div>
-        )}
-
-        {/* Submit Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-          <Link
-            to="/register"
-            className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
-          >
-            ← Back to Step 1 (Account Credentials)
-          </Link>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Submitting Demo Application...</span>
-              </>
-            ) : (
-              <>
-                <span>Submit Demo Application</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </div>
-      </form>
+          </form>
+        </main>
+      </div>
     </div>
   );
 }
