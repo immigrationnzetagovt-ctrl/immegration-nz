@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { applicationService } from '../services/applicationService';
 import logo from '../assets/immegration.png';
-import { Loader2, AlertCircle, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCw, CheckCircle2, Menu, X } from 'lucide-react';
 
 export default function ApplicationDetailsPage() {
   const { user, logout } = useAuth();
@@ -14,6 +14,7 @@ export default function ApplicationDetailsPage() {
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [error, setError] = useState('');
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const fetchApplication = async () => {
     setLoading(true);
@@ -92,11 +93,11 @@ export default function ApplicationDetailsPage() {
   if (!application) {
     return (
       <div className="min-h-screen bg-white text-slate-800 font-[Arial,sans-serif]">
-        <header className="bg-[#005aa9] h-[82px] px-16 flex items-center justify-between">
+        <header className="bg-[#005aa9] h-[82px] px-6 sm:px-16 flex items-center justify-between">
           <img 
             src={logo} 
             alt="Immigration New Zealand" 
-            className="h-12 object-contain brightness-0 invert" 
+            className="h-10 sm:h-12 object-contain brightness-0 invert" 
           />
           <div className="text-white text-xs">
             Logged in: <span className="font-bold">{user?.email || 'User'}</span>
@@ -121,12 +122,20 @@ export default function ApplicationDetailsPage() {
   return (
     <div className="min-h-screen bg-white text-[#222222] font-[Arial,sans-serif] text-[13px] leading-[1.5] flex flex-col antialiased select-none">
       {/* Top Main Navy Header Bar */}
-      <header className="bg-[#005aa9] h-[86px] px-[72px] flex items-center justify-between">
-        <div className="flex items-center">
+      <header className="bg-[#005aa9] h-[70px] sm:h-[86px] px-4 sm:px-[72px] flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden text-white p-1 hover:bg-[#004a87] rounded"
+            aria-label="Toggle Navigation Sidebar"
+          >
+            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
           <img 
             src={logo} 
             alt="Immigration New Zealand" 
-            className="h-[52px] object-contain brightness-0 invert" 
+            className="h-10 sm:h-[52px] object-contain brightness-0 invert" 
           />
         </div>
         <button
@@ -139,23 +148,27 @@ export default function ApplicationDetailsPage() {
       </header>
 
       {/* Breadcrumb Bar */}
-      <div className="bg-[#dbe6f1] h-[34px] px-[72px] text-[13px] text-[#003399] flex items-center gap-1.5 border-b border-[#c2d3e4]">
-        <span className="text-[#003399] hover:underline cursor-pointer flex items-center gap-1">
+      <div className="bg-[#dbe6f1] h-[34px] px-4 sm:px-[72px] text-[13px] text-[#003399] flex items-center gap-1.5 border-b border-[#c2d3e4] overflow-x-auto whitespace-nowrap">
+        <span className="text-[#003399] hover:underline cursor-pointer flex items-center gap-1 shrink-0">
           <svg className="w-3.5 h-3.5 fill-[#222222]" viewBox="0 0 20 20">
             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l1.293 1.293a1 1 0 001.414-1.414l-7-7z" />
           </svg>
           <span className="text-[#003399]">Home</span>
         </span>
         <span className="text-[#333333]">&gt;</span>
-        <span className="text-[#003399] hover:underline cursor-pointer">VisaView</span>
+        <span className="text-[#003399] hover:underline cursor-pointer shrink-0">VisaView</span>
         <span className="text-[#333333]">&gt;</span>
-        <span className="text-[#222222] font-bold">Visa Verification Enquiry</span>
+        <span className="text-[#222222] font-bold shrink-0">Visa Verification Enquiry</span>
       </div>
 
       {/* Main Container */}
-      <div className="flex flex-1 pl-[72px]">
-        {/* Left Navigation Sidebar */}
-        <aside className="w-[215px] bg-[#eef4f9] border-r border-[#cad8e6] pt-6 pr-4 pl-0 shrink-0 min-h-[calc(100vh-120px)]">
+      <div className="flex flex-1 relative">
+        {/* Left Navigation Sidebar (Desktop persistent, Mobile overlay collapsible) */}
+        <aside
+          className={`fixed lg:static inset-y-0 left-0 z-30 w-[215px] bg-[#eef4f9] border-r border-[#cad8e6] pt-6 pr-4 pl-0 shrink-0 transition-transform duration-200 ease-in-out ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
+        >
           <h2 className="text-[17px] font-bold text-[#003399] mb-3 pl-4">VisaView</h2>
           <ul className="space-y-2 text-[13px] text-[#003399]">
             <li className="flex items-start gap-1.5 cursor-pointer hover:underline pl-4">
@@ -173,17 +186,25 @@ export default function ApplicationDetailsPage() {
           </ul>
         </aside>
 
+        {/* Mobile Sidebar Backdrop */}
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-black/40 z-20 lg:hidden"
+          />
+        )}
+
         {/* Right Main Content */}
-        <main className="flex-1 pt-6 pl-9 pr-12 max-w-[950px]">
+        <main className="flex-1 pt-6 px-4 sm:pl-9 sm:pr-12 max-w-[950px] overflow-x-hidden">
           {/* Top Info Header Bar */}
-          <div className="flex justify-between items-baseline text-[13px] mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between text-[13px] mb-6 gap-2">
             <div>
               <span className="text-[#333333]">Acting for:</span>{' '}
               <span className="font-bold text-[#222222]">Visa Verification Service</span>
             </div>
-            <div className="text-[#333333] flex items-center gap-1.5">
+            <div className="text-[#333333] flex items-center gap-1.5 flex-wrap">
               <span>Logged in: <span className="font-semibold">{user?.email}</span></span>
-              <span className="text-[#888888]">|</span>
+              <span className="hidden sm:inline text-[#888888]">|</span>
               <button
                 type="button"
                 onClick={handleLogout}
@@ -196,7 +217,7 @@ export default function ApplicationDetailsPage() {
 
           {/* Title and Explanatory Subtext */}
           <div className="space-y-2 mb-6">
-            <h1 className="text-[28px] font-bold text-[#003399] tracking-tight leading-none mb-4">
+            <h1 className="text-2xl sm:text-[28px] font-bold text-[#003399] tracking-tight leading-none mb-4">
               Visa Verification Enquiry
             </h1>
             <p className="text-[13px] text-[#222222]">
@@ -228,92 +249,92 @@ export default function ApplicationDetailsPage() {
           )}
 
           {/* 2-Column Data Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-1.5 text-[13px] mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 md:gap-y-1.5 text-[13px] mb-6">
             {/* Left Column */}
-            <div className="space-y-1.5">
-              <div className="flex items-baseline">
-                <span className="w-[170px] text-[#222222] font-semibold">Family Name *</span>
-                <span className="w-[220px] font-bold uppercase text-[#222222]">
+            <div className="space-y-2 md:space-y-1.5">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[170px] text-[#222222] font-semibold">Family Name *</span>
+                <span className="sm:w-[220px] font-bold uppercase text-[#222222]">
                   {application.displayName || 'GAGANDEEP SINGH'}
                 </span>
               </div>
 
-              <div className="flex items-baseline">
-                <span className="w-[170px] text-[#222222] font-semibold">Date of Birth</span>
-                <span className="w-[220px] font-normal text-[#222222]">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[170px] text-[#222222] font-semibold">Date of Birth</span>
+                <span className="sm:w-[220px] font-normal text-[#222222]">
                   {formatBirthDate(application.dateOfBirth)}
                 </span>
               </div>
 
-              <div className="flex items-baseline">
-                <span className="w-[170px] text-[#222222] font-semibold">Gender</span>
-                <span className="w-[220px] font-normal text-[#222222]">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[170px] text-[#222222] font-semibold">Gender</span>
+                <span className="sm:w-[220px] font-normal text-[#222222]">
                   {application.gender ? application.gender.charAt(0).toUpperCase() : 'M'}
                 </span>
               </div>
 
-              <div className="flex items-baseline">
-                <span className="w-[170px] text-[#222222] font-semibold">Passport Nationality</span>
-                <span className="w-[220px] font-normal text-[#222222]">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[170px] text-[#222222] font-semibold">Passport Nationality</span>
+                <span className="sm:w-[220px] font-normal text-[#222222]">
                   {application.nationality || 'India'}
                 </span>
               </div>
 
-              <div className="flex items-baseline">
-                <span className="w-[170px] text-[#222222] font-semibold">Passport Number</span>
-                <span className="w-[220px] font-normal text-[#222222]">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[170px] text-[#222222] font-semibold">Passport Number</span>
+                <span className="sm:w-[220px] font-normal text-[#222222]">
                   {application.passportNumber || 'V6416018'}
                 </span>
               </div>
 
-              <div className="flex items-baseline">
-                <span className="w-[170px] text-[#222222] font-semibold">TNZ Client Number</span>
-                <span className="w-[220px] font-normal text-[#222222]">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[170px] text-[#222222] font-semibold">TNZ Client Number</span>
+                <span className="sm:w-[220px] font-normal text-[#222222]">
                   {application.tnzClientNumber || '89904285'}
                 </span>
               </div>
             </div>
 
             {/* Right Column */}
-            <div className="space-y-1.5">
-              <div className="flex items-baseline">
-                <span className="w-[150px] text-[#222222] font-semibold">Visa Type</span>
-                <span className="w-[200px] font-normal text-[#222222]">
+            <div className="space-y-2 md:space-y-1.5 mt-2 md:mt-0">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[150px] text-[#222222] font-semibold">Visa Type</span>
+                <span className="sm:w-[200px] font-normal text-[#222222]">
                   {application.visaType || 'Visitor'}
                 </span>
               </div>
 
-              <div className="flex items-baseline">
-                <span className="w-[150px] text-[#222222] font-semibold">Visa Start Date</span>
-                <span className="w-[200px] font-normal text-[#222222]">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[150px] text-[#222222] font-semibold">Visa Start Date</span>
+                <span className="sm:w-[200px] font-normal text-[#222222]">
                   {formatShortDate(application.travelStartDate || application.createdAt)}
                 </span>
               </div>
 
-              <div className="flex items-baseline">
-                <span className="w-[150px] text-[#222222] font-semibold">First Entry Before</span>
-                <span className="w-[200px] font-normal text-[#222222]">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[150px] text-[#222222] font-semibold">First Entry Before</span>
+                <span className="sm:w-[200px] font-normal text-[#222222]">
                   {application.firstEntryBefore || 'Not applicable'}
                 </span>
               </div>
 
-              <div className="flex items-baseline">
-                <span className="w-[150px] text-[#222222] font-semibold">Number of Entries</span>
-                <span className="w-[200px] font-normal text-[#222222]">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[150px] text-[#222222] font-semibold">Number of Entries</span>
+                <span className="sm:w-[200px] font-normal text-[#222222]">
                   {application.entryType || 'Single'}
                 </span>
               </div>
 
-              <div className="flex items-baseline">
-                <span className="w-[150px] text-[#222222] font-semibold">Expiry Date Travel</span>
-                <span className="w-[200px] font-normal text-[#222222]">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[150px] text-[#222222] font-semibold">Expiry Date Travel</span>
+                <span className="sm:w-[200px] font-normal text-[#222222]">
                   {formatShortDate(application.travelEndDate)}
                 </span>
               </div>
 
-              <div className="flex items-baseline">
-                <span className="w-[150px] text-[#222222] font-semibold">Visa Expiry</span>
-                <span className="w-[200px] font-normal text-[#222222]">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="sm:w-[150px] text-[#222222] font-semibold">Visa Expiry</span>
+                <span className="sm:w-[200px] font-normal text-[#222222]">
                   {formatShortDate(application.travelEndDate)}
                 </span>
               </div>
@@ -330,15 +351,15 @@ export default function ApplicationDetailsPage() {
           </div>
 
           {/* Expiry Date / Valid as at Details */}
-          <div className="space-y-1 mb-6 text-[13px]">
-            <div className="flex items-baseline">
-              <span className="w-[170px] text-[#222222] font-semibold">Expiry Date</span>
+          <div className="space-y-2 sm:space-y-1 mb-6 text-[13px]">
+            <div className="flex flex-col sm:flex-row sm:items-baseline">
+              <span className="sm:w-[170px] text-[#222222] font-semibold">Expiry Date</span>
               <span className="font-normal text-[#222222]">
                 {formatShortDate(application.travelEndDate)}
               </span>
             </div>
-            <div className="flex items-baseline">
-              <span className="w-[170px] text-[#222222] font-semibold">Valid as at</span>
+            <div className="flex flex-col sm:flex-row sm:items-baseline">
+              <span className="sm:w-[170px] text-[#222222] font-semibold">Valid as at</span>
               <span className="font-normal text-[#222222]">
                 {formatShortDate(application.travelEndDate)}
               </span>
@@ -353,10 +374,11 @@ export default function ApplicationDetailsPage() {
           {/* Download Button */}
           <div className="mb-6">
             <button
+              type="button"
               onClick={handleDownloadPdf}
               disabled={downloadingPdf}
               id="download-pdf-btn"
-              className="px-4 py-1.5 bg-[#0066cc] hover:bg-[#0052a3] text-white text-[13px] font-bold rounded-[3px] transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 sm:py-1.5 bg-[#0066cc] hover:bg-[#0052a3] text-white text-[13px] font-bold rounded-[3px] transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer shadow-xs"
             >
               {downloadingPdf ? (
                 <>

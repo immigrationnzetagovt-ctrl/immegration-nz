@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { applicationService } from '../services/applicationService';
 import logo from '../assets/immegration.png';
-import { Loader2, AlertCircle, Home } from 'lucide-react';
+import { Loader2, AlertCircle, Home, Menu, X } from 'lucide-react';
 
 export default function RegisterStepTwoPage() {
   const { user, logout } = useAuth();
@@ -47,6 +47,7 @@ export default function RegisterStepTwoPage() {
   const [formErrors, setFormErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Sync display name if user loads after mount
   useEffect(() => {
@@ -183,16 +184,24 @@ export default function RegisterStepTwoPage() {
   return (
     <div className="min-h-screen bg-white text-[#222222] font-[Arial,sans-serif] text-[13px] leading-normal flex flex-col antialiased select-none">
       {/* Top Header Bar matching VisaView */}
-      <header className="bg-[#005aa9] h-[86px] px-[72px] flex items-center justify-between">
-        <div className="flex items-center">
+      <header className="bg-[#005aa9] h-[70px] sm:h-[86px] px-4 sm:px-[72px] flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden text-white p-1 hover:bg-[#004a87] rounded"
+            aria-label="Toggle Navigation Sidebar"
+          >
+            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
           <img
             src={logo}
             alt="Immigration New Zealand"
-            className="h-[52px] object-contain brightness-0 invert"
+            className="h-10 sm:h-[52px] object-contain brightness-0 invert"
           />
         </div>
         <div className="text-white text-[12px] flex items-center gap-2">
-          <span>Logged in:</span>
+          <span className="hidden sm:inline">Logged in:</span>
           <span className="font-semibold">{user?.email || stepOneData.email || 'User'}</span>
           <span>|</span>
           <button onClick={handleLogout} className="underline hover:text-slate-200">
@@ -202,21 +211,25 @@ export default function RegisterStepTwoPage() {
       </header>
 
       {/* Breadcrumb Bar */}
-      <div className="bg-[#dbe6f1] h-[34px] px-[72px] text-[13px] text-[#003399] flex items-center gap-1.5 border-b border-[#c2d3e4]">
-        <Link to="/" className="flex items-center gap-1 hover:underline text-[#003399]">
+      <div className="bg-[#dbe6f1] h-[34px] px-4 sm:px-[72px] text-[13px] text-[#003399] flex items-center gap-1.5 border-b border-[#c2d3e4] overflow-x-auto whitespace-nowrap">
+        <Link to="/" className="flex items-center gap-1 hover:underline text-[#003399] shrink-0">
           <Home className="w-3.5 h-3.5 text-[#222222]" />
           <span>Home</span>
         </Link>
         <span className="text-[#333333]">&gt;</span>
-        <span className="hover:underline cursor-pointer">VisaView</span>
+        <span className="hover:underline cursor-pointer shrink-0">VisaView</span>
         <span className="text-[#333333]">&gt;</span>
-        <span className="text-[#222222] font-bold">Visa Verification Enquiry</span>
+        <span className="text-[#222222] font-bold shrink-0">Visa Verification Enquiry</span>
       </div>
 
       {/* Main Container */}
-      <div className="flex flex-1 pl-[72px]">
-        {/* Left Navigation Sidebar */}
-        <aside className="w-[215px] bg-[#eef4f9] border-r border-[#cad8e6] pt-6 pr-4 pl-0 shrink-0 min-h-[calc(100vh-120px)]">
+      <div className="flex flex-1 relative">
+        {/* Left Navigation Sidebar (Desktop persistent, Mobile collapsible overlay) */}
+        <aside
+          className={`fixed lg:static inset-y-0 left-0 z-30 w-[215px] bg-[#eef4f9] border-r border-[#cad8e6] pt-6 pr-4 pl-0 shrink-0 transition-transform duration-200 ease-in-out ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
+        >
           <h2 className="text-[17px] font-bold text-[#003399] mb-3 pl-4">VisaView</h2>
           <ul className="space-y-2 text-[13px] text-[#003399]">
             <li className="flex items-start gap-1.5 cursor-pointer hover:underline pl-4">
@@ -234,10 +247,18 @@ export default function RegisterStepTwoPage() {
           </ul>
         </aside>
 
+        {/* Mobile Sidebar Backdrop */}
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-black/40 z-20 lg:hidden"
+          />
+        )}
+
         {/* Right Content Form Area */}
-        <main className="flex-1 pt-6 pl-9 pr-12 max-w-[950px] pb-16">
+        <main className="flex-1 pt-6 px-4 sm:pl-9 sm:pr-12 max-w-[950px] pb-16 overflow-x-hidden">
           {/* Top Info Header Bar */}
-          <div className="flex justify-between items-baseline text-[13px] mb-6 border-b border-slate-200 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between text-[13px] mb-6 border-b border-slate-200 pb-3 gap-2">
             <div>
               <span className="text-[#333333]">Acting for:</span>{' '}
               <span className="font-bold text-[#222222]">Visa Verification Service</span>
@@ -251,7 +272,7 @@ export default function RegisterStepTwoPage() {
 
           {/* Title and Instructions */}
           <div className="space-y-1 mb-6">
-            <h1 className="text-[28px] font-normal text-[#003399] tracking-tight leading-none mb-3">
+            <h1 className="text-2xl sm:text-[28px] font-normal text-[#003399] tracking-tight leading-none mb-3">
               Visa Verification Enquiry
             </h1>
             <p className="text-[13px] text-[#222222]">
@@ -278,7 +299,7 @@ export default function RegisterStepTwoPage() {
           {/* Form matching official VisaView portal layout with all parameters */}
           <form onSubmit={handleSubmit} className="space-y-4 max-w-[650px]" noValidate>
             {/* Family Name */}
-            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start sm:items-center gap-1 sm:gap-4">
               <label htmlFor="displayName" className="text-[13px] text-[#222222]">
                 Family Name *
               </label>
@@ -301,7 +322,7 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Passport Number */}
-            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start sm:items-center gap-1 sm:gap-4">
               <label htmlFor="passportNumber" className="text-[13px] text-[#222222]">
                 Passport Number *
               </label>
@@ -323,7 +344,7 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Document Number */}
-            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start sm:items-center gap-1 sm:gap-4">
               <label htmlFor="documentNumber" className="text-[13px] text-[#222222]">
                 Document Number *
               </label>
@@ -345,7 +366,7 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Date of Birth */}
-            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start sm:items-center gap-1 sm:gap-4">
               <label htmlFor="dateOfBirth" className="text-[13px] text-[#222222]">
                 Date of Birth *
               </label>
@@ -367,7 +388,7 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Gender */}
-            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start sm:items-center gap-1 sm:gap-4">
               <label htmlFor="gender" className="text-[13px] text-[#222222]">
                 Gender *
               </label>
@@ -387,7 +408,7 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Nationality */}
-            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start sm:items-center gap-1 sm:gap-4">
               <label htmlFor="nationality" className="text-[13px] text-[#222222]">
                 Passport Nationality *
               </label>
@@ -410,7 +431,7 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Visa Category / Type */}
-            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start sm:items-center gap-1 sm:gap-4">
               <label htmlFor="visaType" className="text-[13px] text-[#222222]">
                 Visa Category *
               </label>
@@ -432,7 +453,7 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Visa Start Date */}
-            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start sm:items-center gap-1 sm:gap-4">
               <label htmlFor="travelStartDate" className="text-[13px] text-[#222222]">
                 Visa Start Date (dd/mm/yyyy) *
               </label>
@@ -454,7 +475,7 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Visa End Date */}
-            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start sm:items-center gap-1 sm:gap-4">
               <label htmlFor="travelEndDate" className="text-[13px] text-[#222222]">
                 Visa Expiry Date *
               </label>
@@ -476,7 +497,7 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Entry Type */}
-            <div className="grid grid-cols-[180px_1fr] items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start sm:items-center gap-1 sm:gap-4">
               <label htmlFor="entryType" className="text-[13px] text-[#222222]">
                 Number of Entries *
               </label>
@@ -495,7 +516,7 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Conditions / Notes */}
-            <div className="grid grid-cols-[180px_1fr] items-start gap-4 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-start gap-1 sm:gap-4 pt-1">
               <label htmlFor="conditions" className="text-[13px] text-[#222222] pt-1">
                 Visa Conditions
               </label>
@@ -512,14 +533,14 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Checkbox Consent */}
-            <div className="pt-2 pl-[180px]">
+            <div className="pt-2 sm:pl-[180px]">
               <label className="flex items-start gap-2.5 cursor-pointer text-[13px] text-[#222222]">
                 <input
                   type="checkbox"
                   name="consented"
                   checked={formData.consented}
                   onChange={handleChange}
-                  className="mt-0.5 rounded-[2px] border-[#7f9db9] text-[#005ba9] focus:ring-0 w-4 h-4"
+                  className="mt-0.5 rounded-[2px] border-[#7f9db9] text-[#005ba9] focus:ring-0 w-4 h-4 shrink-0"
                 />
                 <span>The visa holder has consented to this check.</span>
               </label>
@@ -529,12 +550,12 @@ export default function RegisterStepTwoPage() {
             </div>
 
             {/* Submit Button matching reference style */}
-            <div className="pt-4 pl-[180px]">
+            <div className="pt-4 sm:pl-[180px]">
               <button
                 type="submit"
                 disabled={loading}
                 id="check-visa-btn"
-                className="px-5 py-2 bg-[#005ba4] hover:bg-[#004a87] text-white text-[13px] font-bold rounded-[2px] transition-colors disabled:opacity-50 flex items-center gap-2 shadow-xs cursor-pointer"
+                className="w-full sm:w-auto px-5 py-2.5 sm:py-2 bg-[#005ba4] hover:bg-[#004a87] text-white text-[13px] font-bold rounded-[2px] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-xs cursor-pointer"
               >
                 {loading ? (
                   <>
