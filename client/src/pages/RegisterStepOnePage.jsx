@@ -77,6 +77,15 @@ export default function RegisterStepOnePage() {
         confirmPassword: formData.confirmPassword,
       });
 
+      // Persist in sessionStorage so page refresh on Step 2 retains applicant details
+      sessionStorage.setItem(
+        'visapath_step1',
+        JSON.stringify({
+          displayName: formData.displayName.trim(),
+          email: formData.email.trim().toLowerCase(),
+        })
+      );
+
       navigate('/register/step-2', {
         state: {
           displayName: formData.displayName.trim(),
@@ -157,6 +166,13 @@ export default function RegisterStepOnePage() {
             </div>
             <div>
               <span className="text-[#19232d]">Logged in: </span>
+              {user ? (
+                <span className="font-semibold text-[#0066a1]">{user.email}</span>
+              ) : (
+                <Link to="/login" className="text-[#0066a1] hover:underline font-semibold">
+                  Log in
+                </Link>
+              )}
             </div>
           </div>
 
@@ -177,10 +193,18 @@ export default function RegisterStepOnePage() {
           {serverError && (
             <div
               role="alert"
-              className="mb-6 p-3.5 rounded-[3px] bg-red-50 border border-red-300 text-red-800 text-sm flex items-center gap-2.5"
+              className="mb-6 p-3.5 rounded-[3px] bg-red-50 border border-red-300 text-red-800 text-sm flex items-center justify-between gap-3"
             >
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-              <span>{serverError}</span>
+              <div className="flex items-center gap-2.5">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <span>{serverError}</span>
+              </div>
+              <Link
+                to="/login"
+                className="text-xs font-bold text-[#0066a1] hover:underline whitespace-nowrap px-2.5 py-1 bg-white border border-[#0066a1] rounded-[3px]"
+              >
+                Log In →
+              </Link>
             </div>
           )}
 

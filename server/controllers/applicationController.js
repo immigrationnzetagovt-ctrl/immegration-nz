@@ -20,6 +20,7 @@ const create = async (req, res, next) => {
       : {};
     let currentUser = req.user;
 
+    let generatedToken = null;
     // If request includes user credentials and user is not authenticated yet, create account first
     if (!currentUser && body.account) {
       const { isValid: isUserValid, errors: userErrors, sanitized: sanitizedUser } = validateRegistration(body.account);
@@ -47,9 +48,9 @@ const create = async (req, res, next) => {
       });
       await currentUser.save();
 
-      // Issue cookie
-      const token = generateToken(currentUser._id);
-      sendAuthCookie(res, token);
+      // Issue cookie & token
+      generatedToken = generateToken(currentUser._id);
+      sendAuthCookie(res, generatedToken);
     }
 
     if (!currentUser) {
@@ -79,6 +80,7 @@ const create = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: 'Demo application submitted successfully',
+      ...(generatedToken ? { token: generatedToken } : {}),
       application,
     });
   } catch (error) {

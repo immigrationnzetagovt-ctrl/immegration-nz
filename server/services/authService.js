@@ -20,11 +20,12 @@ const sendAuthCookie = (res, token) => {
   const isProduction = process.env.NODE_ENV === 'production';
   // Allow explicit override if running production-like SSL or plain HTTP
   const secure = process.env.COOKIE_SECURE === 'true' || (isProduction && process.env.COOKIE_SECURE !== 'false');
+  const sameSite = secure ? 'none' : 'lax';
 
   const cookieOptions = {
     httpOnly: true,
     secure: secure,
-    sameSite: 'lax', // Lax works well with local Vite dev proxy and direct calls
+    sameSite: sameSite, // 'none' is required with secure: true for cross-domain cookies
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     path: '/',
   };
@@ -36,11 +37,12 @@ const sendAuthCookie = (res, token) => {
 const clearAuthCookie = (res) => {
   const isProduction = process.env.NODE_ENV === 'production';
   const secure = process.env.COOKIE_SECURE === 'true' || (isProduction && process.env.COOKIE_SECURE !== 'false');
+  const sameSite = secure ? 'none' : 'lax';
 
   const options = {
     httpOnly: true,
     secure: secure,
-    sameSite: 'lax',
+    sameSite: sameSite,
     path: '/',
   };
 

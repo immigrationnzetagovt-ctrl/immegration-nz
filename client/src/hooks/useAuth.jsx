@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check existing session from HTTP-only cookie on mount
+  // Check existing session from Bearer token or HTTP-only cookie on mount
   const checkAuth = async () => {
     try {
       const data = await authService.getCurrentUser();
@@ -17,6 +17,9 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
       }
     } catch (err) {
+      if (err.status === 401) {
+        localStorage.removeItem('visapath_token');
+      }
       setUser(null);
     } finally {
       setLoading(false);
@@ -29,6 +32,9 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     const data = await authService.login(credentials);
+    if (data.token) {
+      localStorage.setItem('visapath_token', data.token);
+    }
     if (data.success && data.user) {
       setUser(data.user);
     }
@@ -37,6 +43,9 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     const data = await authService.register(userData);
+    if (data.token) {
+      localStorage.setItem('visapath_token', data.token);
+    }
     if (data.success && data.user) {
       setUser(data.user);
     }
@@ -46,7 +55,11 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await authService.logout();
+    } catch (err) {
+      // Ignore network errors on logout
     } finally {
+      localStorage.removeItem('visapath_token');
+      sessionStorage.removeItem('visapath_step1');
       setUser(null);
     }
   };

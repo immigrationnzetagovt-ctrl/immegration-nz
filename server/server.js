@@ -48,8 +48,11 @@ app.use(
       const isLocalOrigin =
         /^http:\/\/localhost(:\d+)?$/.test(origin) ||
         /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin);
-      if (allowedOrigins.includes(origin) ||
-        (process.env.NODE_ENV !== 'production' && isLocalOrigin)) {
+      if (
+        allowedOrigins.includes(origin) ||
+        isLocalOrigin ||
+        process.env.NODE_ENV !== 'production'
+      ) {
         return callback(null, true);
       }
       const error = new Error('CORS origin not allowed');

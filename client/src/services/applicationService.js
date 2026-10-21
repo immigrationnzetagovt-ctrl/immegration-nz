@@ -4,6 +4,9 @@ export const applicationService = {
   // Submit new application
   async createApplication(data) {
     const response = await api.post('/applications', data);
+    if (response.data?.token) {
+      localStorage.setItem('visapath_token', response.data.token);
+    }
     return response.data;
   },
 

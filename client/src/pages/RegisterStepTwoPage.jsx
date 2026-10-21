@@ -22,7 +22,22 @@ export default function RegisterStepTwoPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const stepOneData = location.state || {};
+  // Try recovering step1 from location.state OR sessionStorage
+  const savedStepOne = (() => {
+    try {
+      const stored = sessionStorage.getItem('visapath_step1');
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  })();
+
+  const stepOneData = (location.state && Object.keys(location.state).length > 0)
+    ? location.state
+    : savedStepOne;
+
+  const hasToken = Boolean(localStorage.getItem('visapath_token'));
+  const isAuth = Boolean(user || hasToken);
 
   // Form State with required defaults
   const [formData, setFormData] = useState({
@@ -106,7 +121,22 @@ export default function RegisterStepTwoPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate()) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    const currentToken = localStorage.getItem('visapath_token');
+    const userLoggedIn = Boolean(user || currentToken);
+    const hasInlineAccount = Boolean(stepOneData.email && stepOneData.password);
+
+    if (!userLoggedIn && !hasInlineAccount) {
+      setServerError(
+        'Step 1 account registration is required before submitting. Please complete Step 1 first or log in.'
+      );
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
 
     setLoading(true);
     setServerError('');
@@ -116,7 +146,7 @@ export default function RegisterStepTwoPage() {
       const payload = {
         ...formData,
         // Include account creation details if user is not already logged in
-        ...(stepOneData.email && stepOneData.password
+        ...(hasInlineAccount
           ? {
               account: {
                 displayName: formData.displayName,
@@ -130,6 +160,9 @@ export default function RegisterStepTwoPage() {
 
       await applicationService.createApplication(payload);
 
+      // Clean up temporary step 1 cache
+      sessionStorage.removeItem('visapath_step1');
+
       // Redirect directly to application dashboard
       navigate('/application', { replace: true });
     } catch (err) {
@@ -139,6 +172,7 @@ export default function RegisterStepTwoPage() {
       if (err.errors) {
         setFormErrors(err.errors);
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
     }
@@ -183,6 +217,35 @@ export default function RegisterStepTwoPage() {
           Enter your simulated personal and travel parameters. Default educational values are pre-selected.
         </p>
       </div>
+
+      {/* Step 1 Required Warning if user is not authenticated and has no cached Step 1 info */}
+      {!isAuth && !stepOneData.email && (
+        <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fadeIn">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <strong className="font-bold">Step 1 Account Registration Required:</strong>
+              <p className="mt-0.5 text-amber-800">
+                You are not currently logged in. To submit this application, please complete Step 1 to create your account or log in with your existing account.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              to="/register"
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow-xs"
+            >
+              Go to Step 1
+            </Link>
+            <Link
+              to="/login"
+              className="px-4 py-2 bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 rounded-xl font-bold text-xs"
+            >
+              Log In
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Server Error Banner */}
       {serverError && (
@@ -503,6 +566,19 @@ export default function RegisterStepTwoPage() {
             status of <strong>Pending</strong>. Client-supplied reference numbers or statuses are ignored.
           </div>
         </div>
+
+        {/* Bottom Error Alert if serverError is present */}
+        {serverError && (
+          <div
+            role="alert"
+            className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-start gap-2.5 animate-fadeIn"
+          >
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <div>
+              <strong className="font-semibold">Submission Error:</strong> {serverError}
+            </div>
+          </div>
+        )}
 
         {/* Submit Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
